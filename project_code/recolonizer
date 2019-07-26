@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import time
 
@@ -11,18 +12,18 @@ import pandas
 # Import functions
 from project_code import analysis, image_processing, preprocessing, utils
 
+logger = None
+
 
 # Create main function
 def main(args):
-    # Import input variables
-    var = utils.buildVars(args)
+    utils.summarise(args)
 
     fdir = utils.get_directory(args)
     nrow, ncol = utils.get_grid_format(args.gridformat)
-    verbose = ~args.quiet
 
     # Create needed directories to save outputs
-    docheck = preprocessing.arrange_directories(args.remove, fdir, verbose)
+    docheck = preprocessing.arrange_directories(args.remove, fdir)
     # Obtain list of images to analyse
     imanalyse = preprocessing.get_images(fdir, docheck, args.endpoint)
     imanalyse.sort()
@@ -31,19 +32,25 @@ def main(args):
     start_time = time.time()
 
     # Obtain first and last image
-    LATESTIMAGE = imanalyse[-1]
-    EARLIESTIMAGE = imanalyse[0]
-    if verbose:
-        print("")
-        print("Starting analysis:")
-        print("Earliest image: " + EARLIESTIMAGE)
-        print("Latest image: " + LATESTIMAGE)
-        print("")
-        print("Computing position of the grid")
-        print("This may take a few seconds...")
-        print("")
+    latest_image = imanalyse[-1]
+    earliest_image = imanalyse[0]
+
+    logger.debug("")
+    logger.debug("Starting analysis:")
+    logger.debug("Earliest image: " + earliest_image)
+    logger.debug("Latest image: " + latest_image)
+    logger.debug("")
+    logger.debug("Computing position of the grid")
+    logger.debug("This may take a few seconds...")
+    logger.debug("")
+
+    # TODO(judithbergada): Consider group some of this logic here into small
+    # functions and put them in the image_processing file. Doing this you will
+    # make the main function lighter and rely in some external self-contained
+    # logic which can also be reused in the future.
+
     # Get latest image to detect culture locations
-    imN = cv2.imread(LATESTIMAGE, cv2.IMREAD_GRAYSCALE)
+    imN = cv2.imread(latest_image, cv2.IMREAD_GRAYSCALE)
     min_val, min_loc, pat_h, pat_w = image_processing.get_position_grid(
         imN, nrow, ncol, args.fraction)
 
@@ -59,17 +66,16 @@ def main(args):
 
     # Locate the position of the spots and the agar into different masks
     grd = np.ones(mask.shape, dtype=bool)
-    spots = np.logical_and(grd, ~mask)
-    agar = np.logical_and(grd, mask)
+    spots = np.logical_and(grd, ~mask)  # grd & ~mask
+    agar = np.logical_and(grd, mask)  # grd & mask
 
     # Reset mask to avoid problems in future iterations
     mask = None
 
-    if verbose:
-        print("Analysing each of the images:")
-    for FILENAME in imanalyse:
+    logger.debug("Analysing each of the images:")
+    for file_name in imanalyse:
 
-        im = cv2.imread(FILENAME, cv2.IMREAD_GRAYSCALE)
+        im = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
         arr = im[min_loc[1]:h_bottom, min_loc[0]:w_right]
 
         # Set threshold depending on last image
@@ -86,28 +92,26 @@ def main(args):
 
         # Measure culture phenotypes
         outputs_df = analysis.measure_outputs(arr, mask, pat_h, pat_w, nrow,
-                                             ncol, FILENAME, spots,
-                                             args.lightcorrection)
+                                              ncol, file_name, spots,
+                                              args.lightcorrection)
         # Save outputs
         outputs_df.to_csv(
             os.path.join(fdir, "Output_Data",
-                         FILENAME.split(".")[0].split("/")[-1] + ".out"),
+                         file_name.split(".")[0].split("/")[-1] + ".out"),
             sep="\t",
             index=False)
 
         # Save mask for a visual check
         img_outputs_dir = os.path.join(fdir, "Output_Images",
-                                       FILENAME.split("/")[-1])
+                                       file_name.split("/")[-1])
         cv2.imwrite(img_outputs_dir, mask.astype(np.uint8) * 255)
 
         # Reset mask to avoid problems in the next iteration
         mask = None
-        if verbose:
-            print("Analysis complete for " + FILENAME.split("/")[-1])
-    if verbose:
-        final_time = round(time.time() - start_time, 2)
-        print("All analyses finished in {:.1f} seconds".format(final_time))
-        print("No more images to analyse. I'm done")
+        logger.debug("Analysis complete for " + file_name.split("/")[-1])
+    logger.debug("All analyses finished in {:.2f} seconds".format(time.time() -
+                                                                  start_time))
+    logger.debug("No more images to analyse. I'm done")
 
 
 # Execute main function
@@ -181,4 +185,14 @@ if __name__ == '__main__':
         default=0.8)
 
     args = parser.parse_args()
+
+    # Setup logger
+    if args.quiet:
+        logging.basicConfig(
+            format="%(levelname)s: %(message)s", level=logging.INFO)
+    else:
+        logging.basicConfig(
+            format="%(levelname)s: %(message)s", level=logging.DEBUG)
+    logger = logging.getLogger(__name__)
+
     main(args)

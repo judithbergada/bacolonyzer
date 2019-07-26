@@ -1,9 +1,13 @@
 """Functions to get the agar and spot colors and to locate the grid.
 """
 
+import itertools
+
 import cv2
 import numpy as np
 from scipy.signal import find_peaks
+
+from tqdm import tqdm
 
 
 def get_agar_spot_color(im):
@@ -38,11 +42,10 @@ def get_position_grid(im, nrow, ncol, fract):
     rpix = int(h / nrow)  # Set random size of window that will later be scaled
     rspot = int((rpix * 0.7) / 2)  # Set random size of spot radius to scale
     pattern = np.ones((nrow * rpix, ncol * rpix), dtype=np.uint8) * color_agar
-    for i in range(nrow):
-        for j in range(ncol):
-            cv2.circle(pattern,
-                       (j * rpix + int(rpix / 2), i * rpix + int(rpix / 2)),
-                       rspot, color_spot, -1)
+    for i, j in itertools.product(range(nrow), range(ncol)):
+        cv2.circle(pattern,
+                   (j * rpix + int(rpix / 2), i * rpix + int(rpix / 2)), rspot,
+                   color_spot, -1)
 
     # Check for structure between fract and 100% of the total image size.
     min_fraction, max_fraction = fract, 1.0
@@ -51,7 +54,9 @@ def get_position_grid(im, nrow, ncol, fract):
 
     # Store the info about the best scale where pattern fits the image.
     found = None
-    for fraction in np.linspace(min_fraction, max_fraction, iterations):
+    for fraction in tqdm(
+            np.linspace(min_fraction, max_fraction, iterations),
+            desc='Fitting pattern...'):
         # Scale the pattern to the fraction of the given image.
         pat_h, pat_w = int(h * fraction), int(w * fraction)
         pattern_scaled = cv2.resize(pattern, (pat_w, pat_h))

@@ -5,14 +5,13 @@ import numpy as np
 import pandas
 
 
-def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, FILE, spots,
-                   correction):
+def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
+                    correction):
     '''
     Add intensity measures and other measurements to a final dictionary.
     This dictionary will be outputed as a data-frame.
     '''
     # Outputs will be saved in a dictionary with the following features
-    outputs_dict = {}
     allrows, allcols, allintensities, allareas = [], [], [], []
     allcolonymeans, allcolonyvariance, allbackgroundmeans = [], [], []
 
@@ -21,7 +20,7 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, FILE, spots,
     d_y = int(pat_w / ncol)
 
     # Maximum intensity that we can see in a grayscale image is 255
-    intMax = 255
+    int_max = 255
 
     # From now on: reference point is the top left corner of the rectangle.
     for i in range(nrow):
@@ -55,43 +54,47 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, FILE, spots,
             # If there are colonies in the window (window = patch)
             if spot_intensities.size > 1:
                 # Compute the mean of the intensity (Normalized from 0 to 1)
-                colonyMean_patch = np.mean(spot_intensities / intMax)
+                colony_mean_patch = np.mean(spot_intensities / int_max)
                 # Compute the variance of the intensity
-                colonyVariance_patch = np.var(spot_intensities / intMax)
+                colony_variance_patch = np.var(spot_intensities / int_max)
                 # Compute all intensity values normalized by the size of window
-                intens_patch = np.sum(spot_intensities) / (tile.size * intMax)
+                intens_patch = np.sum(spot_intensities) / (tile.size * int_max)
             else:  # If there aren't colonies in the window, intensities are 0
-                colonyMean_patch = colonyVariance_patch = intens_patch = 0
+                colony_mean_patch = colony_variance_patch = intens_patch = 0
 
             # Compute agar information (agar is the opposite to the mask)
             bkgrnd = tile[~spots_patch]
 
             # If there is background in the patch, compute mean of intensities
             if bkgrnd.size > 1:
-                backgroundMean_patch = np.mean(bkgrnd / intMax)
+                background_mean_patch = np.mean(bkgrnd / int_max)
             else:  # If there is no background in the patch, intensities are 0
-                backgroundMean_patch = 0
+                background_mean_patch = 0
 
             # Save all variables in the final lists
             allrows.append(i + 1)
             allcols.append(j + 1)
             allintensities.append(intens_patch)
             allareas.append(area_patch)
-            allcolonymeans.append(colonyMean_patch)
-            allcolonyvariance.append(colonyVariance_patch)
-            allbackgroundmeans.append(backgroundMean_patch)
+            allcolonymeans.append(colony_mean_patch)
+            allcolonyvariance.append(colony_variance_patch)
+            allbackgroundmeans.append(background_mean_patch)
 
     # Save final outputs
-    outputs_dict["Row"] = allrows
-    outputs_dict["Column"] = allcols
-    outputs_dict["Intensity"] = allintensities
-    outputs_dict["Area"] = allareas
-    outputs_dict["ColonyMean"] = allcolonymeans
-    outputs_dict["ColonyVariance"] = allcolonyvariance
-    outputs_dict["BackgroundMean"] = allbackgroundmeans
-    fname = FILE.split(".")[0].split("/")[-1]
-    outputs_dict["Barcode"] = [fname[0:15]] * len(allrows)
-    outputs_dict["Filename"] = [fname] * len(allrows)
-    # Convert dictionary to data frame
-    outputs_df = pandas.DataFrame(outputs_dict)
-    return outputs_df
+    # TODO(judithbergada): this could be improved by calling
+    # os.path.basename().split('.')[0]. Is more elegant and reliable.
+    # Also check the method os.path.splitext which makes the separation of the
+    # file extension and the file name. Your way of handle it may find some
+    # problems with names with more than one dot.
+    fname = file_name.split(".")[0].split("/")[-1]
+    return pandas.DataFrame({
+        "Row": allrows,
+        "Column": allcols,
+        "Intensity": allintensities,
+        "Area": allareas,
+        "ColonyMean": allcolonymeans,
+        "ColonyVariance": allcolonyvariance,
+        "BackgroundMean": allbackgroundmeans,
+        "Barcode": [fname[0:15]] * len(allrows),
+        "Filename": [fname] * len(allrows),
+    })

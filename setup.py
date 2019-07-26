@@ -20,5 +20,6 @@ setup(
         'opencv-python>=4.0.0.21',
         'pandas>=0.21.1',
         'scipy>=1.0.0',
+        'tqdm>=4.28.0',
     ],
 )

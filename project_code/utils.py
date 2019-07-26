@@ -1,8 +1,10 @@
 """Functions to set the inputs that will be used.
 """
 
-# Import packages
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 
 def get_directory(args):
@@ -19,47 +21,42 @@ def get_directory(args):
 
 
 # Set input parameters for analysis
-def buildVars(args):
+def summarise(args):
     '''Read user input, set up flags for analysis, report on
     options chosen and find files to be analysed.'''
-    inp = args
 
-    # Set variables nrow and ncol according to rows and columns provided
-    nrow, ncol = get_grid_format(inp.gridformat)
+    # Get variables nrow and ncol according to rows and columns provided
+    nrow, ncol = get_grid_format(args.gridformat)
 
     # If required by the user, summarise basic input information
-    if not args.quiet:
-        print("")
-        print("Summary of inputs:")
-        print("Grid:")
-        print("Expecting {} rows and {} columns on plate.".format(nrow, ncol))
-        print("Searching for colony locations automatically.")
-        print("Assuming that grid occupies at least {:.1f}%".format(
-            args.fraction * 100))
+    logger.debug("")
+    logger.debug("Summary of inputs:")
+    logger.debug("Grid:")
+    logger.debug("Expecting {} rows and {} columns on plate.".format(
+        nrow, ncol))
+    logger.debug("Searching for colony locations automatically.")
+    logger.debug("Assuming that grid occupies at least {:.1f}%".format(
+        args.fraction * 100))
 
-        print("Corrections:")
-        if inp.lightcorrection:
-            print("Lighting correction turned on.")
-            print("Using first image as best estimate of pseudo-empty plate.")
-        else:
-            print("Lighting correction turned off.")
+    logger.debug("Corrections:")
+    if args.lightcorrection:
+        logger.debug("Lighting correction turned on.")
+        logger.debug(
+            "Using first image as best estimate of pseudo-empty plate.")
+    else:
+        logger.debug("Lighting correction turned off.")
 
-        print("Analysis:")
-        if inp.endpoint:
-            print("Analysing only last image in series.")
-        else:
-            print("Analysing the entire set of images in series.")
+    logger.debug("Analysis:")
+    if args.endpoint:
+        logger.debug("Analysing only last image in series.")
+    else:
+        logger.debug("Analysing the entire set of images in series.")
 
-        if inp.remove:
-            print("Removing any outputs existing in the directory.")
-        else:
-            print("Outputs that exist in the directory will not be removed.")
-
-    input_params = {
-        'endpoint': inp.endpoint,
-        'remove': inp.remove,
-    }
-    return (input_params)
+    if args.remove:
+        logger.debug("Removing any outputs existing in the directory.")
+    else:
+        logger.debug(
+            "Outputs that exist in the directory will not be removed.")
 
 
 # Utils methods
