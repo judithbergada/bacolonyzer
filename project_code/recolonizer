@@ -7,9 +7,7 @@ import time
 
 import cv2
 import numpy as np
-import pandas
 
-# Import functions
 from project_code import analysis, image_processing, preprocessing, utils
 
 logger = None
@@ -37,8 +35,8 @@ def main(args):
 
     logger.debug("")
     logger.debug("Starting analysis:")
-    logger.debug("Earliest image: " + earliest_image)
-    logger.debug("Latest image: " + latest_image)
+    logger.debug("Earliest image: %s", earliest_image)
+    logger.debug("Latest image: %s", latest_image)
     logger.debug("")
     logger.debug("Computing position of the grid")
     logger.debug("This may take a few seconds...")
@@ -50,14 +48,14 @@ def main(args):
     # logic which can also be reused in the future.
 
     # Get latest image to detect culture locations
-    imN = cv2.imread(latest_image, cv2.IMREAD_GRAYSCALE)
-    min_val, min_loc, pat_h, pat_w = image_processing.get_position_grid(
-        imN, nrow, ncol, args.fraction)
+    im_n = cv2.imread(latest_image, cv2.IMREAD_GRAYSCALE)
+    _, min_loc, pat_h, pat_w = image_processing.get_position_grid(
+        im_n, nrow, ncol, args.fraction)
 
     # Cut the original image with the size of the best pattern match.
     w_right = int(min_loc[0] + pat_w)
     h_bottom = int(min_loc[1] + pat_h)
-    im_ = imN[min_loc[1]:h_bottom, min_loc[0]:w_right]
+    im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
 
     # Find spots and agar based on an automatic threshold
     _, mask = cv2.threshold(
@@ -75,8 +73,8 @@ def main(args):
     logger.debug("Analysing each of the images:")
     for file_name in imanalyse:
 
-        im = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-        arr = im[min_loc[1]:h_bottom, min_loc[0]:w_right]
+        img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
+        arr = img[min_loc[1]:h_bottom, min_loc[0]:w_right]
 
         # Set threshold depending on last image
         thresh, _ = cv2.threshold(
@@ -108,7 +106,7 @@ def main(args):
 
         # Reset mask to avoid problems in the next iteration
         mask = None
-        logger.debug("Analysis complete for " + file_name.split("/")[-1])
+        logger.debug("Analysis complete for %s", file_name.split("/")[-1])
     logger.debug("All analyses finished in {:.2f} seconds".format(time.time() -
                                                                   start_time))
     logger.debug("No more images to analyse. I'm done")
@@ -116,7 +114,6 @@ def main(args):
 
 # Execute main function
 if __name__ == '__main__':
-    '''Define input parameters for analysis'''
     parser = argparse.ArgumentParser(
         description=
         '''Analyse timeseries of QFA images: locate cultures on plate,
@@ -169,6 +166,7 @@ if __name__ == '__main__':
         default=['8x12'])
 
     def range_float(x):
+        """Check the float is in [0, 1] range."""
         x = float(x)
         if x < 0.0 or x > 1.0:
             raise argparse.ArgumentTypeError(

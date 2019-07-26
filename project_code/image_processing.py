@@ -6,7 +6,6 @@ import itertools
 import cv2
 import numpy as np
 from scipy.signal import find_peaks
-
 from tqdm import tqdm
 
 

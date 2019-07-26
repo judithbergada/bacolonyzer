@@ -7,10 +7,9 @@ import pandas
 
 def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
                     correction):
-    '''
-    Add intensity measures and other measurements to a final dictionary.
+    """Add intensity measures and other measurements to a final dictionary.
     This dictionary will be outputed as a data-frame.
-    '''
+    """
     # Outputs will be saved in a dictionary with the following features
     allrows, allcols, allintensities, allareas = [], [], [], []
     allcolonymeans, allcolonyvariance, allbackgroundmeans = [], [], []

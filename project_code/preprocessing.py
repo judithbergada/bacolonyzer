@@ -84,4 +84,4 @@ def get_images(directory, docheck, endpoint):
     # If there aren't any new images to analyse, display error and exit
     if not imanalyse:
         raise ValueError("No new images to analyse in " + directory + ".")
-    return (imanalyse)
+    return imanalyse

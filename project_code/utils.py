@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_directory(args):
+    """Get directory to work with."""
     # Set variable fdir = current directory, if user didn't specify another dir
-    if args.directory == None:
+    if args.directory is None:
         fdir = os.getcwd()
     # Set variable fdir = directory chosen by the user, if a dir is specified
     else:
@@ -22,8 +23,8 @@ def get_directory(args):
 
 # Set input parameters for analysis
 def summarise(args):
-    '''Read user input, set up flags for analysis, report on
-    options chosen and find files to be analysed.'''
+    """Read user input, set up flags for analysis, report on
+    options chosen and find files to be analysed."""
 
     # Get variables nrow and ncol according to rows and columns provided
     nrow, ncol = get_grid_format(args.gridformat)
@@ -32,8 +33,7 @@ def summarise(args):
     logger.debug("")
     logger.debug("Summary of inputs:")
     logger.debug("Grid:")
-    logger.debug("Expecting {} rows and {} columns on plate.".format(
-        nrow, ncol))
+    logger.debug("Expecting %s rows and %s columns on plate.", nrow, ncol)
     logger.debug("Searching for colony locations automatically.")
     logger.debug("Assuming that grid occupies at least {:.1f}%".format(
         args.fraction * 100))
@@ -93,6 +93,6 @@ def get_grid_format(given_format):
 
     # If there has been an error, print it and exit
     if error:
-        raise ValueError('''Wrong dimensions for a rectangular grid format.
-        Check variable --gridformat and modify it accordingly.''')
+        raise ValueError("""Wrong dimensions for a rectangular grid format.
+        Check variable --gridformat and modify it accordingly.""")
     return nrow, ncol
