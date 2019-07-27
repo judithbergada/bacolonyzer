@@ -2,18 +2,18 @@
 
 from distutils.core import setup
 
-import project_code
+import recolonyzer
 
 setup(
-    name='recolonizer',
-    version=project_code.__version__,
+    name='recolonyzer',
+    version=recolonyzer.__version__,
     description='A very nice short description',
     author='Judith Bergada',
     author_email='judithbergada@gmail.com',
-    url='https://github.com/judithbergada/{project_name}',
-    packages=['project_code'],
+    url='https://github.com/judithbergada/recolonyzer',
+    packages=['recolonyzer'],
     long_description=open('README.md').read(),
-    scripts=['project_code/recolonizer'],
+    scripts=['recolonyzer/recolonyzer'],
     python_requires='>3.4, <4',
     install_requires=[
         'numpy>=1.13.0',
