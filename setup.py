@@ -6,7 +6,7 @@ import recolonyzer
 
 def readme():
     with open('README.md') as fd:
-        return fd.read()
+        return fd.read().strip()
 
 
 setup(
