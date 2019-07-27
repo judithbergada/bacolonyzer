@@ -4,6 +4,11 @@ from distutils.core import setup
 
 import recolonyzer
 
+def readme():
+    with open('README.md') as fd:
+        return fd.read()
+
+
 setup(
     name='recolonyzer',
     version=recolonyzer.__version__,
@@ -12,7 +17,9 @@ setup(
     author_email='judithbergada@gmail.com',
     url='https://github.com/judithbergada/recolonyzer',
     packages=['recolonyzer'],
-    long_description=open('README.md').read(),
+    long_description=readme(),
+    long_description_content_type='text/markdown',
+    license='MIT',
     scripts=['recolonyzer/recolonyzer'],
     python_requires='>3.4, <4',
     install_requires=[
@@ -22,4 +29,17 @@ setup(
         'scipy>=1.0.0',
         'tqdm>=4.28.0',
     ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Scientific/Engineering :: Image Recognition',
+  ],
 )
