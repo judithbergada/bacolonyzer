@@ -59,7 +59,6 @@ def summarise(args):
             "Outputs that exist in the directory will not be removed.")
 
 
-# Utils methods
 def get_grid_format(given_format):
     """Check that the input variable --gridformat is correct.
     Raise an error message if --gridformat is wrong.
@@ -96,3 +95,11 @@ def get_grid_format(given_format):
         raise ValueError("""Wrong dimensions for a rectangular grid format.
         Check variable --gridformat and modify it accordingly.""")
     return nrow, ncol
+
+
+def range_float(x):
+    """Check the float is in [0, 1] range."""
+    x = float(x)
+    if x <= 0.0 or x >= 1.0:
+        raise argparse.ArgumentTypeError("%r not in range (0.0, 1.0)" % (x, ))
+    return x
