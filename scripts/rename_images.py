@@ -32,10 +32,13 @@ def main(args):
         new_path = os.path.join(os.path.dirname(file_path), new_file_name)
 
         print("{} -> {}".format(file_path, new_path))
-        if not args.nodryrun:
+        if args.nodryrun:
             os.rename(file_path, new_path)
 
         current_datetime += delta_time
+
+    if args.nodryrun:
+        print("All files renamed!")
 
 
 if __name__ == '__main__':
