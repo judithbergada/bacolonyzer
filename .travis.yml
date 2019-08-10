@@ -9,7 +9,7 @@ install:
 script:
   - recolonyzer --help
 before_deploy:
-  - pip install mkdocs
+  - pip install mkdocs mkdocs-material
   - mkdocs build --verbose --clean --strict
 deploy:
   - provider: pypi
