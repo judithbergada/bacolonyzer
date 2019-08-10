@@ -1,101 +1,29 @@
 #!/usr/bin/env python3
 
 import argparse
-import logging
 
-from recolonyzer import analysis, filesystem, utils
+import recolonyzer
+from recolonyzer import commands
 
-logger = None
-
-
-def main(args):
-    # Print information of inputs to users.
-    utils.summarise(args)
-
-    # Get working directory.
-    fdir = filesystem.get_directory(args.directory)
-    nrow, ncol = utils.get_grid_format(args.grid_format)
-
-    # Create needed directories to save outputs.
-    filesystem.arrange_directories(fdir)
-    # Obtain list of images to analyse.
-    imanalyse = filesystem.get_images(fdir, args.endpoint)
-
-    # Perform main logic.
-    output_dfs, output_images = analysis.analyse_timeseries_qfa(
-        imanalyse,
-        nrow,
-        ncol,
-        light_correction=args.light_correction,
-        fraction=args.fraction)
-
-    # Save outputs.
-    file_names = [filesystem.get_file_name(f) for f in imanalyse]
-    filesystem.save_outputs(file_names, output_dfs, output_images, fdir)
-
-    logger.info("No more images to analyse. I'm done")
-
-
-# Execute main function
+# Entrypoint from the command line.
 if __name__ == '__main__':
+    # Create main inputs parser.
     parser = argparse.ArgumentParser(
-        description='''Analyse timeseries of QFA images: locate cultures on
-        plate, segment image into agar and cells, apply lighting correction,
-        write report including cell density estimates for each location
-        in each image.''')
+        description="""Commands and tools for the analysis of QFA images.""")
+    # Add version argument.
     parser.add_argument(
-        "-d",
-        "--directory",
-        type=str,
-        help='''Directory in which to search for image files that need to be
-        analysed.
-        Default: current directory.''',
-        default=".")
-    parser.add_argument(
-        "-c",
-        "--light_correction",
-        help='''Enables lighting correction between images.
-        Default: False. Light correction is disabled.''',
-        action="store_true")
-    parser.add_argument(
-        "-q",
-        "--quiet",
-        help='''Suppresses messages printed during the analysis.
-        Default: show messages.''',
-        action="store_true")
-    parser.add_argument(
-        "-e",
-        "--endpoint",
-        help='''Analyses only the final image in the series.
-        It is useful to test single images.
-        Default: False. Analyse all images in the directory.''',
-        action="store_true")
-    parser.add_argument(
-        "-g",
-        "--grid_format",
-        type=str,
-        nargs='+',
-        help='''Specifies rectangular grid format.
-        Important: specify number of rows and number of columns, in this order
-        (e.g. -g 8x12 or -g 8 12).
-        Default: 8x12.''',
-        default=['8x12'])
-    parser.add_argument(
-        "-f",
-        "--fraction",
-        type=utils.range_float,
-        help='''Specifies the minimum fraction of the image that corresponds
-        to the grid. Adjust it if grid occupies a small part of the total image.
-        Default: 0.8.''',
-        default=0.8)
+        "-v",
+        "--version",
+        help="show current version",
+        action='version',
+        version="ReColonyzer {}".format(recolonyzer.__version__))
 
-    args = parser.parse_args()
+    # Register all possible commands of ReColonyzer to the main inputs parser.
+    subparsers = parser.add_subparsers()
+    commands.AnalyseCommand().register_parser(subparsers)
+    commands.RenameImagesCommand().register_parser(subparsers)
 
-    # Setup logger
-    if args.quiet:
-        logging.basicConfig(format="%(message)s", level=logging.INFO)
-    else:
-        logging.basicConfig(format="%(message)s", level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-
-    main(args)
+    # Actually parsing the inputs given by the user.
+    options = parser.parse_args()
+    # Execute the run functions depending on the command given on the terminal.
+    options.func(options)

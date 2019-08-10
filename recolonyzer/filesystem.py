@@ -3,10 +3,8 @@
 
 import logging
 import os
-import shutil
 
 import cv2
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +38,8 @@ def arrange_directories(directory):
 
 
 def get_images(directory, endpoint):
-    '''Get filenames for all images in current directory.
-    Return a list of filenames to analyse'''
+    """Get filenames for all images in current directory.
+    Return a list of filenames to analyse"""
 
     # Set image formats that will be considered.
     image_formats = {".jpg", ".jpeg", ".tif", ".tiff", ".png"}
