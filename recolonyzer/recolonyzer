@@ -113,62 +113,62 @@ def main(args):
 # Execute main function
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description=
-        '''Analyse timeseries of QFA images: locate cultures on plate,
-        segment image into agar and cells, apply lighting correction,
+        description='''Analyse timeseries of QFA images: locate cultures on
+        plate, segment image into agar and cells, apply lighting correction,
         write report including cell density estimates for each location
         in each image.''')
     parser.add_argument(
+        "-d",
+        "--directory",
+        type=str,
+        help='''Directory in which to search for image files that need to
+        analysed.
+        Default: current directory.''',
+        default=".")
+    parser.add_argument(
         "-c",
-        "--lightcorrection",
-        help='''Flag used to enable lighting correction between images.
-        Default: light correction is disabled.''',
+        "--light_correction",
+        help='''Enables lighting correction between images.
+        Default: False. Light correction is disabled.''',
         action="store_true")
     parser.add_argument(
         "-q",
         "--quiet",
-        help='''Flag used to suppress messages printed during the analysis.
+        help='''Suppresses messages printed during the analysis.
         Default: show messages.''',
         action="store_true")
     parser.add_argument(
         "-r",
         "--remove",
-        help='''Flag used to remove any output files from the directory
+        help='''Removes any output files from the directory
         before starting the analysis. It is useful to re-analyse a set of
-        images that have been ananlysed in advance.
-        Default: keep previous output files.''',
+        images that have been analysed in advance.
+        Default: False. Keep previous output files.''',
         action="store_true")
     parser.add_argument(
         "-e",
         "--endpoint",
-        help='''Flag used to analyse only the final image in the series.
+        help='''Analyses only the final image in the series.
         It is useful to test single images.
-        Default: analyse all images in the directory.''',
+        Default: False. Analyse all images in the directory.''',
         action="store_true")
     parser.add_argument(
-        "-d",
-        "--directory",
-        type=str,
-        help='''Directory in which to search for image files that
-        have not been analysed.
-        Default = current directory.''',
-        default=".")
-    parser.add_argument(
-        "-o",
-        "--gridformat",
+        "-g",
+        "--grid_format",
         type=str,
         nargs='+',
-        help='''Specify rectangular grid format. Important: specify number of
-        rows and number of columns, in this order (e.g. -o 8x12 or -o 8 12).
-        Default = 8x12.''',
+        help='''Specifies rectangular grid format.
+        Important: specify number of rows and number of columns, in this order
+        (e.g. -g 8x12 or -g 8 12).
+        Default: 8x12.''',
         default=['8x12'])
     parser.add_argument(
         "-f",
         "--fraction",
         type=utils.range_float,
-        help='''Minimum fraction of the image that corresponds to the grid.
-        Adjust if grid occupies a small part of the total image.
-        Default = 0.8.''',
+        help='''Specifies the minimum fraction of the image that corresponds
+        to the grid. Adjust it if grid occupies a small part of the total image.
+        Default: 0.8.''',
         default=0.8)
 
     args = parser.parse_args()

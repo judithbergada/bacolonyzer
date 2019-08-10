@@ -1,0 +1,40 @@
+site_name: ReColonyzer
+docs_dir: docs
+site_dir: site
+
+repo_name: "judithbergada/recolonyzer"
+repo_url: "https://github.com/judithbergada/recolonyzer"
+edit_uri: "tree/master/docs/"
+
+# Google Analytics
+google_analytics:
+  - UA-139052696-2
+  - auto
+
+# Copyright
+copyright: "Copyright &copy; 2019 Judith Bergadà Pijuan"
+
+nav:
+  - Home: index.md
+
+theme:
+  name: material
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette:
+    primary: green
+    accent: indigo
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - codehilite
+
+# Customization
+extra:
+  social:
+    - type: github-alt
+      link: https://github.com/judithbergada/recolonyzer
+    - type: "twitter"
+      link: "https://twitter.com/j_bergada"

@@ -4,10 +4,8 @@ from distutils.core import setup
 
 import recolonyzer
 
-def readme():
-    with open('README.md') as fd:
-        return fd.read().strip()
-
+_DESCRIPTION = """\
+"""
 
 setup(
     name='recolonyzer',
@@ -17,8 +15,7 @@ setup(
     author_email='judithbergada@gmail.com',
     url='https://github.com/judithbergada/recolonyzer',
     packages=['recolonyzer'],
-    long_description=readme(),
-    long_description_content_type='text/markdown',
+    long_description=_DESCRIPTION,
     license='MIT',
     scripts=['recolonyzer/recolonyzer'],
     python_requires='>3.4, <4',
@@ -41,5 +38,5 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Image Recognition',
-  ],
+    ],
 )
