@@ -37,11 +37,6 @@ def summarise(args):
     else:
         logger.debug("Analysing the entire set of images in series.")
 
-    if args.remove:
-        logger.debug("Removing any outputs existing in the directory.")
-    else:
-        logger.debug("Outputs that exist in the directory will not be removed.")
-
 
 def get_grid_format(given_format):
     """Check that the input variable --gridformat is correct.

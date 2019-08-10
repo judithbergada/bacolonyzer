@@ -25,32 +25,21 @@ def get_directory(directory=None):
     return fdir
 
 
-def arrange_directories(remove, directory):
-    '''Remove and create directory to save output files.
-    Return a boolean showing if output data folder is empty'''
-    # Set directories to keep and/or remove and create
+def arrange_directories(directory):
+    """Creates directories to save output files."""
+    # Set directories to keep or create.
     imdir = os.path.join(directory, "Output_Images")
     datdir = os.path.join(directory, "Output_Data")
 
-    # Define variable do_check to see if some analysis are already done
-    do_check = True
-
-    if remove and os.path.isdir(imdir):  # Remove existing output directories
-        shutil.rmtree(imdir)
-    if remove and os.path.isdir(datdir):
-        shutil.rmtree(datdir)
-
-    if not os.path.isdir(imdir):  # Create directories to save the outputs
+    # Create directories to save the outputs.
+    if not os.path.isdir(imdir):
         os.mkdir(imdir)
     if not os.path.isdir(datdir):
         os.mkdir(datdir)
-        do_check = False  # If the directory has just been created, do_check = F
-
     logger.debug("Outputs will be saved in " + imdir + " & " + datdir)
-    return do_check
 
 
-def get_images(directory, docheck, endpoint):
+def get_images(directory, endpoint):
     '''Get filenames for all images in current directory.
     Return a list of filenames to analyse'''
 
@@ -66,23 +55,6 @@ def get_images(directory, docheck, endpoint):
     ]
     allfiles.sort()
 
-    # If there's a need to check analysed outputs
-    if docheck:
-        # Obtain all file names from the folder of analysed data
-        datdir = os.path.join(directory, "Output_Data")
-        outputfiles = os.listdir(datdir)
-        # Take names of all files that have already been analysed
-        formatending = ".out"
-        alldats = [
-            newfile for newfile in outputfiles
-            if formatending in newfile.lower()
-        ]
-        # Obtain only the names (remove .format)
-        ims_done = list(
-            np.unique([os.path.splitext(dat)[0] for dat in alldats]))
-    else:
-        ims_done = []
-
     # If endpoint is True, then take only first and last images
     if endpoint:
         allfiles = [allfiles[-1]]
@@ -90,14 +62,13 @@ def get_images(directory, docheck, endpoint):
     # Obtain all images to analyse
     imanalyse = []
     for filename in allfiles:
-        fbase = os.path.splitext(filename)[0]  # Obtain only names
-        if fbase not in ims_done:  # If image is not analysed, add to the "todo"
-            fullfilename = os.path.join(directory, filename)
-            imanalyse.append(fullfilename)
+        fullfilename = os.path.join(directory, filename)
+        imanalyse.append(fullfilename)
 
     # If there aren't any new images to analyse, display error and exit
     if not imanalyse:
         raise ValueError("No new images to analyse in " + directory + ".")
+    imanalyse.sort()
     return imanalyse
 
 
@@ -108,6 +79,8 @@ def get_file_name(image_path):
 
 def save_outputs(file_names, output_dfs, output_images, output_base_dir):
     """Saves outputs."""
+    logger.debug("Saving outputs...")
+
     for file_name, output_df, output_image in zip(file_names, output_dfs,
                                                   output_images):
 

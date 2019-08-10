@@ -17,10 +17,9 @@ def main(args):
     nrow, ncol = utils.get_grid_format(args.grid_format)
 
     # Create needed directories to save outputs.
-    docheck = filesystem.arrange_directories(args.remove, fdir)
+    filesystem.arrange_directories(fdir)
     # Obtain list of images to analyse.
-    imanalyse = filesystem.get_images(fdir, docheck, args.endpoint)
-    imanalyse.sort()
+    imanalyse = filesystem.get_images(fdir, args.endpoint)
 
     # Perform main logic.
     output_dfs, output_images = analysis.analyse_timeseries_qfa(
@@ -63,14 +62,6 @@ if __name__ == '__main__':
         "--quiet",
         help='''Suppresses messages printed during the analysis.
         Default: show messages.''',
-        action="store_true")
-    parser.add_argument(
-        "-r",
-        "--remove",
-        help='''Removes any output files from the directory
-        before starting the analysis. It is useful to re-analyse a set of
-        images that have been analysed in advance.
-        Default: False. Keep previous output files.''',
         action="store_true")
     parser.add_argument(
         "-e",
