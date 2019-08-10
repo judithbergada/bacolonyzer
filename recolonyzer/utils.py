@@ -2,23 +2,8 @@
 """
 
 import logging
-import os
 
 logger = logging.getLogger(__name__)
-
-
-def get_directory(args):
-    """Get directory to work with."""
-    # Set variable fdir = current directory, if user didn't specify another dir
-    if args.directory is None:
-        fdir = os.getcwd()
-    # Set variable fdir = directory chosen by the user, if a dir is specified
-    else:
-        fdir = os.path.realpath(args.directory)
-        # Make sure that the directory exists. Otherwise, print error and exit
-        if not os.path.isdir(fdir):
-            raise ValueError("Directory doesn't exist. Check --directory.")
-    return fdir
 
 
 # Set input parameters for analysis
@@ -27,7 +12,7 @@ def summarise(args):
     options chosen and find files to be analysed."""
 
     # Get variables nrow and ncol according to rows and columns provided
-    nrow, ncol = get_grid_format(args.gridformat)
+    nrow, ncol = get_grid_format(args.grid_format)
 
     # If required by the user, summarise basic input information
     logger.debug("")
@@ -39,7 +24,7 @@ def summarise(args):
         args.fraction * 100))
 
     logger.debug("Corrections:")
-    if args.lightcorrection:
+    if args.light_correction:
         logger.debug("Lighting correction turned on.")
         logger.debug(
             "Using first image as best estimate of pseudo-empty plate.")
@@ -55,8 +40,7 @@ def summarise(args):
     if args.remove:
         logger.debug("Removing any outputs existing in the directory.")
     else:
-        logger.debug(
-            "Outputs that exist in the directory will not be removed.")
+        logger.debug("Outputs that exist in the directory will not be removed.")
 
 
 def get_grid_format(given_format):
@@ -101,5 +85,5 @@ def range_float(x):
     """Check the float is in [0, 1] range."""
     x = float(x)
     if x <= 0.0 or x >= 1.0:
-        raise argparse.ArgumentTypeError("%r not in range (0.0, 1.0)" % (x, ))
+        raise argparse.ArgumentTypeError("%r not in range (0.0, 1.0)" % (x,))
     return x

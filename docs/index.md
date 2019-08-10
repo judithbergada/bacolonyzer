@@ -21,7 +21,6 @@ pip3 install -e .
 Once you have run any of the previous options, you will have the command `recolonyzer` available.
 
 ## Usage
------
 
 To use the software, a command line tool is provided and after following the installation guide, you can start using the command `recolonyzer`.
 
@@ -63,6 +62,6 @@ optional arguments:
                         small part of the total image. Default: 0.8.
 ```
 
-ReColonyzer analyses all images files found under the `directory` flag given. It assumes that alphabetical ordering of the files is the same as their temporal order. That is why the best approach is to have all the image files named with some `prefix` and then some date time signature (e.g. `my_prefix_YYYY_MM_DD_hh_mm.jpeg`)
+ReColonyzer analyses **all images** files found under the `directory` flag given. It assumes that alphabetical ordering of the files is the same as their temporal order. That is why the best approach is to have all the image files named with some `prefix` and then some date time signature (e.g. `my_prefix_YYYY_MM_DD_hh_mm.jpeg`)
 
 and output description

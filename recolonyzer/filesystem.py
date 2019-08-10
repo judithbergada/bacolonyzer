@@ -5,9 +5,24 @@ import logging
 import os
 import shutil
 
+import cv2
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+
+def get_directory(directory=None):
+    """Get directory to work with."""
+    # Set variable fdir = current directory, if user didn't specify another dir
+    if not directory:
+        fdir = os.getcwd()
+    # Set variable fdir = directory chosen by the user, if a dir is specified
+    else:
+        fdir = os.path.realpath(os.path.expanduser(directory))
+        # Make sure that the directory exists. Otherwise, print error and exit
+        if not os.path.isdir(fdir):
+            raise ValueError("Directory doesn't exist. Check --directory.")
+    return fdir
 
 
 def arrange_directories(remove, directory):
@@ -39,17 +54,15 @@ def get_images(directory, docheck, endpoint):
     '''Get filenames for all images in current directory.
     Return a list of filenames to analyse'''
 
-    # Set image formats that will be considered (.tif will also include .tiff)
-    image_formats = [".jpg", ".jpeg", ".tif", ".png"]
+    # Set image formats that will be considered.
+    image_formats = {".jpg", ".jpeg", ".tif", ".tiff", ".png"}
     # Obtain all file names in the specified directory
     filenames = os.listdir(directory)
 
     # Take only the images from the directory (images have any image_formats)
-    # TODO(judithbergada): Using os.path.splitext will help to make one single
-    # loop
     allfiles = [
         newfile for newfile in filenames
-        if any(nformat in newfile.lower() for nformat in image_formats)
+        if os.path.splitext(newfile.lower())[1] in image_formats
     ]
     allfiles.sort()
 
@@ -65,7 +78,8 @@ def get_images(directory, docheck, endpoint):
             if formatending in newfile.lower()
         ]
         # Obtain only the names (remove .format)
-        ims_done = list(np.unique([dat.split(".")[0] for dat in alldats]))
+        ims_done = list(
+            np.unique([os.path.splitext(dat)[0] for dat in alldats]))
     else:
         ims_done = []
 
@@ -76,7 +90,7 @@ def get_images(directory, docheck, endpoint):
     # Obtain all images to analyse
     imanalyse = []
     for filename in allfiles:
-        fbase = filename.split(".")[0]  # Obtain only names (remove .format)
+        fbase = os.path.splitext(filename)[0]  # Obtain only names
         if fbase not in ims_done:  # If image is not analysed, add to the "todo"
             fullfilename = os.path.join(directory, filename)
             imanalyse.append(fullfilename)
@@ -85,3 +99,25 @@ def get_images(directory, docheck, endpoint):
     if not imanalyse:
         raise ValueError("No new images to analyse in " + directory + ".")
     return imanalyse
+
+
+def get_file_name(image_path):
+    """Get file names from given path removing extension and directories."""
+    return os.path.basename(os.path.splitext(image_path)[0])
+
+
+def save_outputs(file_names, output_dfs, output_images, output_base_dir):
+    """Saves outputs."""
+    for file_name, output_df, output_image in zip(file_names, output_dfs,
+                                                  output_images):
+
+        # Save DataFrame of output metrics.
+        output_df.to_csv(
+            os.path.join(output_base_dir, "Output_Data",
+                         "{}.out".format(file_name)),
+            sep="\t",
+            index=False)
+        # Save Image mask
+        img_outputs_dir = os.path.join(output_base_dir, "Output_Images",
+                                       "{}.png".format(file_name))
+        cv2.imwrite(img_outputs_dir, output_image)

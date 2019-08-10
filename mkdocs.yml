@@ -19,6 +19,7 @@ nav:
 
 theme:
   name: material
+  logo: assets/bacteria.svg
   font:
     text: Roboto
     code: Roboto Mono

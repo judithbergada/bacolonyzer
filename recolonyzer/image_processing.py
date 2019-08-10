@@ -27,7 +27,7 @@ def get_agar_spot_color(im):
     return int(color_agar), int(color_spot)
 
 
-def get_position_grid(im, nrow, ncol, fract):
+def get_position_grid(im, nrow, ncol, frac):
     """Get the position of the grid in the image.
     Use an artificial pattern and the normalized squared difference to find it.
     Return the position of the grid and the size of the scaled the pattern.
@@ -46,8 +46,8 @@ def get_position_grid(im, nrow, ncol, fract):
                    (j * rpix + int(rpix / 2), i * rpix + int(rpix / 2)), rspot,
                    color_spot, -1)
 
-    # Check for structure between fract and 100% of the total image size.
-    min_fraction, max_fraction = fract, 1.0
+    # Check for structure between frac and 100% of the total image size.
+    min_fraction, max_fraction = frac, 1.0
     # Check for structure using iterations by increasing 0.2% of the image
     iterations = int((max_fraction - min_fraction) * 100 / 0.2)
 

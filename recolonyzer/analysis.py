@@ -1,8 +1,97 @@
 """Functions to compute the outputs that will be saved.
 """
+import logging
+import os
+import time
 
+import cv2
 import numpy as np
-import pandas
+import pandas as pd
+
+from recolonyzer import filesystem, image_processing
+
+logger = logging.getLogger(__name__)
+
+
+def analyse_timeseries_qfa(images_paths,
+                           nrow,
+                           ncol,
+                           light_correction=False,
+                           fraction=0.8):
+    # Set timer
+    start_time = time.time()
+
+    # Obtain first and last image
+    latest_image = images_paths[-1]
+    earliest_image = images_paths[0]
+
+    # Print information to users
+    logger.debug("")
+    logger.debug("Starting analysis:")
+    logger.debug("Earliest image: %s", earliest_image)
+    logger.debug("Latest image: %s", latest_image)
+    logger.debug("")
+    logger.debug("Computing position of the grid")
+    logger.debug("This may take a few seconds...")
+    logger.debug("")
+
+    # Get latest image to detect culture locations
+    im_n = cv2.imread(latest_image, cv2.IMREAD_GRAYSCALE)
+    _, min_loc, pat_h, pat_w = image_processing.get_position_grid(
+        im_n, nrow, ncol, fraction)
+
+    # Cut the original image with the size of the best pattern match.
+    w_right = int(min_loc[0] + pat_w)
+    h_bottom = int(min_loc[1] + pat_h)
+    im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
+
+    # Find spots and agar based on an automatic threshold
+    _, mask = cv2.threshold(
+        np.array(im_, dtype=np.uint8), 0, 255,
+        cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    # Locate the position of the spots and the agar into different masks.
+    grd = np.ones(mask.shape, dtype=bool)
+    spots = np.logical_and(grd, ~mask)  # grd & ~mask
+    agar = np.logical_and(grd, mask)  # grd & mask
+
+    # Reset mask to avoid problems in future iterations.
+    mask = None
+
+    output_dfs = []
+    output_images = []
+    logger.debug("Analysing each of the images:")
+    for file_name in images_paths:
+
+        img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
+        arr = img[min_loc[1]:h_bottom, min_loc[0]:w_right]
+
+        # Set threshold depending on last image
+        thresh, _ = cv2.threshold(
+            np.array(arr, dtype=np.uint8), 0, 255,
+            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        # If the threshold is lower than the values of the agar, set it higher.
+        thresh = max(thresh, np.mean(arr[agar]) + 1)
+
+        # Create mask to detect spots in each image.
+        # This will be used only to compute the area of the spots.
+        mask = np.ones(arr.shape, dtype=np.bool)
+        mask[arr < thresh] = False
+
+        # Measure culture phenotypes.
+        output_dfs.append(
+            measure_outputs(arr, mask, pat_h, pat_w, nrow, ncol, file_name,
+                            spots, light_correction))
+
+        # Save mask for a visual check.
+        output_images.append(mask.astype(np.uint8) * 255)
+
+        # Reset mask to avoid problems in the next iteration.
+        mask = None
+        logger.debug("Analysis complete for %s", os.path.basename(file_name))
+    logger.debug("All analyses finished in {:.2f} seconds".format(time.time() -
+                                                                  start_time))
+    return output_dfs, output_images
 
 
 def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
@@ -10,7 +99,7 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
     """Add intensity measures and other measurements to a final dictionary.
     This dictionary will be outputed as a data-frame.
     """
-    # Outputs will be saved in a dictionary with the following features
+    # Outputs will be saved in a dictionary with the following features.
     allrows, allcols, allintensities, allareas = [], [], [], []
     allcolonymeans, allcolonyvariance, allbackgroundmeans = [], [], []
 
@@ -18,7 +107,7 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
     d_x = int(pat_h / nrow)
     d_y = int(pat_w / ncol)
 
-    # Maximum intensity that we can see in a grayscale image is 255
+    # Maximum intensity that we can see in a grayscale image is 255.
     int_max = 255
 
     # From now on: reference point is the top left corner of the rectangle.
@@ -80,13 +169,8 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
             allbackgroundmeans.append(background_mean_patch)
 
     # Save final outputs
-    # TODO(judithbergada): this could be improved by calling
-    # os.path.basename().split('.')[0]. Is more elegant and reliable.
-    # Also check the method os.path.splitext which makes the separation of the
-    # file extension and the file name. Your way of handle it may find some
-    # problems with names with more than one dot.
-    fname = file_name.split(".")[0].split("/")[-1]
-    return pandas.DataFrame({
+    fname = filesystem.get_file_name(file_name)
+    return pd.DataFrame({
         "Row": allrows,
         "Column": allcols,
         "Intensity": allintensities,
