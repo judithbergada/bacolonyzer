@@ -16,6 +16,9 @@ copyright: "Copyright &copy; 2019 Judith Bergadà Pijuan"
 
 nav:
   - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Outputs: outputs.md
 
 theme:
   name: material

@@ -36,7 +36,7 @@ class RenameImagesCommand(abstract.AbstractCommand):
             "-s",
             "--start_time",
             help="""Initial time for files renaming.
-            Required format: 'YYYY-MM-DD hh:mm'""",
+            Required format: 'YYYY-MM-DD hh:mm'. Default: now.""",
             type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d %H:%M'),
             default=datetime.datetime.now())
         parser.add_argument(

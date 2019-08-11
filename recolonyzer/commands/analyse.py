@@ -13,8 +13,7 @@ class AnalyseCommand(abstract.AbstractCommand):
     _DESCRIPTION = """\
     Analyse timeseries of QFA images: locate cultures on
     plate, segment image into agar and cells, apply lighting correction,
-    write report including cell density estimates for each location
-    in each image.
+    and generate output files for each image.
     """
 
     def register_arguments(self, parser):
