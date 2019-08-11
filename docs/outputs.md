@@ -7,7 +7,7 @@ If folders exist in advance, they will not be overwritten. However, if there
 are files inside these folders with the same name as ReColonyzer outputs,
 those files will be overwritten.
 
-**Output_Data**
+## Output_Data
 
 This folder will contain tab delimed text files with the image metrics
 computed by ReColonyzer. Each file will contain information of one image,
@@ -27,7 +27,7 @@ Here, users can find, for each image and each colony area:
 * Filename: full name of the image.
 
 
-**Output_Images**
+## Output_Images
 
 This folder will contain binary images (black/white), which will be named
 exactly the same as the original image files used for the anlysis.
@@ -41,3 +41,5 @@ order to take only the surface of the plate and ignore the rest.
 The area of the colonies in each image, which is shown numerically in
 "Output_Data", is inferred from these results.
 However, the cell density does not depend on these areas.
+
+**Enjoy using ReColonyzer!**

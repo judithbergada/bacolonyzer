@@ -29,4 +29,4 @@ recolonyzer -h
     ReColonyzer has been developed and tested under Linux and macOS, but it also
     works in Microsoft Windows.
 
-## Enjoy using ReColonyzer!
+**Enjoy using ReColonyzer!**

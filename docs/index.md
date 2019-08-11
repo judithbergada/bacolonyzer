@@ -22,4 +22,4 @@ use ReColonyzer:
 * [Usage](usage.md)
 * [Outputs](outputs.md)
 
-## Enjoy using ReColonyzer!
+**Enjoy using ReColonyzer!**

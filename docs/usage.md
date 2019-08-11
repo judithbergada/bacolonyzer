@@ -217,4 +217,4 @@ recolonyzer rename_images -s "2019-08-11 12:30"
   recolonyzer rename_images --no_dry_run
   ```
 
-## Enjoy using ReColonyzer!
+**Enjoy using ReColonyzer!**
