@@ -2,6 +2,8 @@
 
 from distutils.core import setup
 
+import setuptools
+
 import recolonyzer
 
 _DESCRIPTION = """\
@@ -14,7 +16,7 @@ setup(
     author='Judith Bergada',
     author_email='judithbergada@gmail.com',
     url='https://github.com/judithbergada/recolonyzer',
-    packages=['recolonyzer'],
+    packages=setuptools.find_packages(),
     long_description=_DESCRIPTION,
     license='MIT',
     scripts=['recolonyzer/recolonyzer'],
