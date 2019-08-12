@@ -7,12 +7,15 @@ import setuptools
 import recolonyzer
 
 _DESCRIPTION = """\
+ReColonyzer is a software to quantify the cell density of bacterial cultures
+from timecourse pictures. It uses image analysis tools to determine the fitness
+of spotted cultures of bacteria grown on solid agar.
 """
 
 setup(
     name='recolonyzer',
     version=recolonyzer.__version__,
-    description='A very nice short description',
+    description='Analyse timeseries of QFA images',
     author='Judith Bergada',
     author_email='judithbergada@gmail.com',
     url='https://github.com/judithbergada/recolonyzer',
