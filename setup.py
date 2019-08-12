@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from distutils import util
 from distutils.core import setup
 
 import setuptools
@@ -12,6 +13,16 @@ from timecourse pictures. It uses image analysis tools to determine the fitness
 of spotted cultures of bacteria grown on solid agar.
 """
 
+
+def ensure_scripts(linux_scripts):
+    """Creates the proper script names required for each platform
+    """
+
+    if util.get_platform()[:3] == "win":
+        return linux_scripts + [script + ".bat" for script in linux_scripts]
+    return linux_scripts
+
+
 setup(
     name='recolonyzer',
     version=recolonyzer.__version__,
@@ -22,7 +33,7 @@ setup(
     packages=setuptools.find_packages(),
     long_description=_DESCRIPTION,
     license='MIT',
-    scripts=['recolonyzer/recolonyzer'],
+    scripts=ensure_scripts(['recolonyzer/recolonyzer']),
     python_requires='>3.4, <4',
     install_requires=[
         'numpy>=1.13.0',
