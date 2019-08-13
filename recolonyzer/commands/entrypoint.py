@@ -1,12 +1,13 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python3
 
 import argparse
 
 import recolonyzer
 from recolonyzer import commands
 
+
 # Entrypoint from the command line.
-if __name__ == '__main__':
+def run():
     # Create main inputs parser.
     parser = argparse.ArgumentParser(
         description="""Commands and tools for the analysis of QFA images.""")
