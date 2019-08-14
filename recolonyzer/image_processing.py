@@ -14,9 +14,12 @@ def get_agar_spot_color(im):
     Obtain the values by checking the largest two peaks in the color histogram.
     """
     im_ = np.asarray(im).ravel()
+
+    # Compute histogram of intensities
     bincnt = np.bincount(im_)
 
-    peaks, _ = find_peaks(bincnt, width=3)
+    # Find peaks in histogram
+    peaks, _ = find_peaks(bincnt, width=1)
     vals = bincnt[peaks]
     idx = np.argsort(vals)[::-1]
 

@@ -37,6 +37,13 @@ def analyse_timeseries_qfa(images_paths,
 
     # Get latest image to detect culture locations
     im_n = cv2.imread(latest_image, cv2.IMREAD_GRAYSCALE)
+
+    # Perform some normalization in order to remove outliers and noise.
+    # The 1% and 99% quantile clipping is a good option.
+    quants = np.quantile(im_n.ravel(), [0.01, 0.99])
+    im_n = np.clip(im_n, *quants)
+    im_n = np.array(im_n, dtype=np.uint8)
+
     _, min_loc, pat_h, pat_w = image_processing.get_position_grid(
         im_n, nrow, ncol, fraction)
 
@@ -139,16 +146,17 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
             tile = patch - backgr
             spot_intensities = tile[spots_patch]
 
-            # If there are colonies in the window (window = patch)
+            # If there are colonies in the window or patch, compute metrics
             if spot_intensities.size > 1:
                 # Compute the mean of the intensity (Normalized from 0 to 1)
                 colony_mean_patch = np.mean(spot_intensities / int_max)
                 # Compute the variance of the intensity
                 colony_variance_patch = np.var(spot_intensities / int_max)
-                # Compute all intensity values normalized by the size of window
-                intens_patch = np.sum(spot_intensities) / (tile.size * int_max)
             else:  # If there aren't colonies in the window, intensities are 0
-                colony_mean_patch = colony_variance_patch = intens_patch = 0
+                colony_mean_patch = colony_variance_patch = 0
+
+            # Compute all intensity values normalized by the size of window
+            intens_patch = np.sum(tile) / (tile.size * int_max)
 
             # Compute agar information (agar is the opposite to the mask)
             bkgrnd = tile[~spots_patch]

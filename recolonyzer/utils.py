@@ -26,8 +26,6 @@ def summarise(args):
     logger.debug("Corrections:")
     if args.light_correction:
         logger.debug("Lighting correction turned on.")
-        logger.debug(
-            "Using first image as best estimate of pseudo-empty plate.")
     else:
         logger.debug("Lighting correction turned off.")
 
@@ -80,5 +78,5 @@ def range_float(x):
     """Check the float is in [0, 1] range."""
     x = float(x)
     if x <= 0.0 or x >= 1.0:
-        raise argparse.ArgumentTypeError("%r not in range (0.0, 1.0)" % (x,))
+        raise argparse.ArgumentTypeError("%r not in range (0.0, 1.0)" % (x, ))
     return x
