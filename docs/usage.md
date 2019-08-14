@@ -102,8 +102,8 @@ subtracting the value of the agar. This is highly recommended, since it will
 correct for differences in light intensities between and within images,
 and results will be more accurate.
 
-If you want to disable this lighting correction, please do that using the flag
-`--light_correction_off` or `-c`.
+To disable the lighting correction, please use the flag `--light_correction_off`
+or `-c`.
 
 Example:
 ```bash
