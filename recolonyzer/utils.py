@@ -24,7 +24,7 @@ def summarise(args):
         args.fraction * 100))
 
     logger.debug("Corrections:")
-    if args.light_correction:
+    if args.light_correction_off:
         logger.debug("Lighting correction turned on.")
     else:
         logger.debug("Lighting correction turned off.")

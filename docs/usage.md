@@ -97,13 +97,13 @@ recolonyzer analyse -f 0.8
 
 **Light correction**
 
-Using the flag `--light_correction` or `-c`, you force ReColonyzer to
-normalise each of the images and the colony areas by subtracting the value of
-the agar.
+By default, ReColonyzer normalises wach of the images and the colony areas by
+subtracting the value of the agar. This is highly recommended, since it will
+correct for differences in light intensities between and within images,
+and results will be more accurate.
 
-This is highly recommended, since it will correct for differences in light
-intensities between and within images, and results will be more accurate.
-By default, ReColonyzer will not apply the lighting correction.
+If you want to disable this lighting correction, please do that using the flag
+`--light_correction_off` or `-c`.
 
 Example:
 ```bash

@@ -27,10 +27,10 @@ class AnalyseCommand(abstract.AbstractCommand):
             default=".")
         parser.add_argument(
             "-c",
-            "--light_correction",
-            help="""Enables lighting correction between images.
-            Default: False. Light correction is disabled.""",
-            action="store_true")
+            "--light_correction_off",
+            help="""Disables lighting correction between images.
+            Default: Light correction is enabled.""",
+            action="store_false")
         parser.add_argument(
             "-q",
             "--quiet",
@@ -87,7 +87,7 @@ class AnalyseCommand(abstract.AbstractCommand):
             imanalyse,
             nrow,
             ncol,
-            light_correction=args.light_correction,
+            light_correction=args.light_correction_off,
             fraction=args.fraction)
 
         # Save outputs.
