@@ -19,6 +19,7 @@ nav:
   - Installation: installation.md
   - Usage: usage.md
   - Outputs: outputs.md
+  - Algorithm: algorithm.md
 
 theme:
   name: material
@@ -34,6 +35,7 @@ markdown_extensions:
   - admonition
   - pymdownx.superfences
   - codehilite
+  - attr_list
 
 # Customization
 extra:
