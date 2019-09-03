@@ -2,9 +2,8 @@
 
 from distutils.core import setup
 
-import setuptools
-
 import recolonyzer
+import setuptools
 
 _DESCRIPTION = """\
 ReColonyzer is a software to quantify the cell density of bacterial cultures
@@ -32,6 +31,7 @@ setup(
         'pandas>=0.21.1',
         'scipy>=1.0.0',
         'tqdm>=4.28.0',
+        'Pillow>=6.0.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

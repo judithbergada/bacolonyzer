@@ -2,6 +2,7 @@ import datetime
 import glob
 import os
 
+from PIL import Image
 from recolonyzer.commands import abstract
 
 
@@ -30,8 +31,16 @@ class RenameImagesCommand(abstract.AbstractCommand):
         parser.add_argument(
             "-p",
             "--prefix",
-            help="File prefix to generate. Default: QFA_90000000001_.",
+            help="File prefix for the ranaming. Default: QFA_90000000001_.",
             default="QFA_90000000001_")
+        parser.add_argument(
+            "-m",
+            "--read_metadata",
+            help="""By default, image files will be renamed using the date and
+            time information retrieved from images metadata. If you specify
+            this flag, the renaming will take place according to
+            parameters -s and -i.""",
+            action="store_false")
         parser.add_argument(
             "-s",
             "--start_time",
@@ -62,26 +71,35 @@ class RenameImagesCommand(abstract.AbstractCommand):
                     args.glob))
         print('Found {} files to rename.'.format(len(file_names)))
 
-        # Get extension of the files.
-        extension = os.path.splitext(file_names[0])[1]
-
-        # Define starting date time and time interval.
+        # Define starting date time and time interval according to -s and -i
         current_datetime = args.start_time
         delta_time = datetime.timedelta(minutes=args.interval)
 
         for file_path in file_names:
-            # Create new file name.
-            new_file_name = args.prefix + current_datetime.strftime(
-                "%Y-%m-%d_%H-%M-%S") + extension
+            # Get extension of the files
+            extension = os.path.splitext(file_names[0])[1]
+
+            if not args.read_metadata:
+                # Use default or imputed values of date and time
+                date_time = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+                current_datetime += delta_time
+            else:
+                # Obtain date and time from image metadata
+                exif_data = Image.open(file_path)._getexif()[36867]
+                d_t = datetime.datetime.strptime(exif_data,
+                                                 '%Y:%m:%d %H:%M:%S')
+                date_time = d_t.strftime("%Y-%m-%d_%H-%M-%S")
+
+            # Create new file name
+            new_file_name = args.prefix + date_time + extension
             new_path = os.path.join(os.path.dirname(file_path), new_file_name)
 
             # Show the renaming to the user.
             print("{} -> {}".format(file_path, new_path))
-            # If specified by the user, perform the actual renaming of the file.
+            # If specified by users, perform the actual renaming of files.
             if args.no_dry_run:
                 os.rename(file_path, new_path)
 
-            current_datetime += delta_time
-
+        # Print information to users
         if args.no_dry_run:
             print("All files renamed!")
