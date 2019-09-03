@@ -35,12 +35,12 @@ class RenameImagesCommand(abstract.AbstractCommand):
             default="QFA_90000000001_")
         parser.add_argument(
             "-m",
-            "--read_metadata",
+            "--no_read_metadata",
             help="""By default, image files will be renamed using the date and
             time information retrieved from images metadata. If you specify
             this flag, the renaming will take place according to
             parameters -s and -i.""",
-            action="store_false")
+            action="store_true")
         parser.add_argument(
             "-s",
             "--start_time",
@@ -79,7 +79,7 @@ class RenameImagesCommand(abstract.AbstractCommand):
             # Get extension of the files
             extension = os.path.splitext(file_names[0])[1]
 
-            if not args.read_metadata:
+            if args.no_read_metadata:
                 # Use default or imputed values of date and time
                 date_time = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
                 current_datetime += delta_time

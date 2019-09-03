@@ -138,7 +138,8 @@ A brief description of the inputs can be found using the `help` flag:
 ```text
 $ recolonyzer rename_images --help
 usage: recolonyzer rename_images [-h] [-d DIRECTORY] [-g GLOB] [-p PREFIX]
-                                 [-s START_TIME] [-i INTERVAL] [--no_dry_run]
+                                 [-m] [-s START_TIME] [-i INTERVAL]
+                                 [--no_dry_run]
 ```
 
 **Directory**
@@ -173,30 +174,55 @@ Example 2 (rename all files starting with IMG_):
 recolonyzer rename_images -g IMG_*
 ```
 
+**Read metadata**
+
+By default, ReColonyzer will rename all image files by using the date
+and time information retrieved from the images metadata.
+
+In order to avoid using images metadata for the renaming, the flag `-m` or
+`--no_read_metadata` is needed. In this case, the renaming will take place
+according to parameters `-s` and `-i`.
+
+Example:
+```bash
+recolonyzer rename_images -m -s "2019-08-11 12:30" -i 30
+```
+
 **Start time**
 
 Users can specify with `--start_time` or `s` the date and time of the
 first image, which will be used as a reference to rename the whole image series.
-If not specified, ReColonyzer will take the current date and time.
+By default, ReColonyzer will take the current date and time.
 
 Required format: "YYYY-MM-DD hh:mm". Example:
 ```bash
-recolonyzer rename_images -s "2019-08-11 12:30"
+recolonyzer rename_images -m -s "2019-08-11 12:30"
 ```
 
 !!! info "Please note"
 
-    The date time format must be given within quotes.
+    This parameter will only be considered if users also require flag `-m`. The date time format must be given within quotes.
 
+**Dry run**
+
+By default, ReColonyzer will only show the renaming of the image files. However, to keep the users safe, it will not apply the modifications.
+
+In order to definitely rename all files, the flag `--no_dry_run` is needed.
+
+Example:
+```bash
+recolonyzer rename_images --no_dry_run
+```
 
 **Other parameters**
 
 * `--interval` or `-i`: this parameter should be adjusted to define the time
-  interval between images (in minutes). By default, ReColonyzer assumes 30min.
+  interval between images (in minutes), and will only be considered together
+  with parameter `-m`. By default, ReColonyzer assumes 30min.
 
   Example:
   ```bash
-  recolonyzer rename_images -i 30
+  recolonyzer rename_images -m -i 30
   ```
 
 * `--prefix` or `-p`: this parameter defines the prefix of the new names.
@@ -206,15 +232,6 @@ recolonyzer rename_images -s "2019-08-11 12:30"
   Example:
   ```bash
   recolonyzer rename_images -p QFA_90000000001_
-  ```
-
-* `--no_dry_run`: By default, ReColonyzer will only show the renaming of the
-  image files. However, to keep the users safe, it will not apply the
-  modifications. In order to definitely rename all files, this flag is needed.
-
-  Example:
-  ```bash
-  recolonyzer rename_images --no_dry_run
   ```
 
 **Enjoy using ReColonyzer!**
