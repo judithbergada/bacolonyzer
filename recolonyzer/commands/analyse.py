@@ -32,6 +32,17 @@ class AnalyseCommand(abstract.AbstractCommand):
             Default: Light correction is enabled.""",
             action="store_false")
         parser.add_argument(
+            "-r",
+            "--reference_image",
+            type=str,
+            help="""Path to a reference image that shows a white and a black
+            paper next to each other. Important: this picture must be taken
+            using the same camera settings as the image series. This is used
+            to calibrate the final results and might be useful to compare
+            different experiments.
+            Default: No reference image is used.""",
+            default="")
+        parser.add_argument(
             "-q",
             "--quiet",
             help="""Suppresses messages printed during the analysis.
@@ -80,7 +91,8 @@ class AnalyseCommand(abstract.AbstractCommand):
         # Create needed directories to save outputs.
         filesystem.arrange_directories(fdir)
         # Obtain list of images to analyse.
-        imanalyse = filesystem.get_images(fdir, args.endpoint)
+        imanalyse = filesystem.get_images(fdir, args.endpoint,
+                                          args.reference_image)
 
         # Perform main logic.
         output_dfs, output_images = analysis.analyse_timeseries_qfa(
@@ -88,7 +100,8 @@ class AnalyseCommand(abstract.AbstractCommand):
             nrow,
             ncol,
             light_correction=args.light_correction_off,
-            fraction=args.fraction)
+            fraction=args.fraction,
+            reference_image=args.reference_image)
 
         # Save outputs.
         file_names = [filesystem.get_file_name(f) for f in imanalyse]

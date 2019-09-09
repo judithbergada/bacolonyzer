@@ -1,7 +1,9 @@
-"""Functions to get the agar and spot colors and to locate the grid.
+"""Functions to get the agar and spot colors, to locate the grid, and to
+calibrate the image colors according to a black and white reference picture.
 """
 
 import itertools
+import os
 
 import cv2
 import numpy as np
@@ -70,3 +72,25 @@ def get_position_grid(im, nrow, ncol, frac):
         if found is None or min_val < found[0]:
             found = (min_val, min_loc, pat_h, pat_w)
     return found
+
+
+def calibration_maxmin(ref_img):
+    """Obtain minimum and maximum intensity values captured by the camera by
+    using a reference image. This will be used to calibrate the final results.
+    """
+
+    # Make sure that reference image exists
+    if os.path.isfile(ref_img):
+        # Open reference image and get all the intensity values
+        reference_image = cv2.imread(ref_img, cv2.IMREAD_GRAYSCALE)
+
+        # Take highest 2 peaks: these will be the black and white colors
+        color_peak1, color_peak2 = get_agar_spot_color(reference_image)
+
+        min_ref = min(color_peak1, color_peak2)
+        max_ref = max(color_peak1, color_peak2)
+    else:
+        logger.info(
+            """Reference image not found. Calibration not performed.""")
+        min_ref, max_ref = 0, 255
+    return (min_ref, max_ref)

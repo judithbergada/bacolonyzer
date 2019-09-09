@@ -37,8 +37,8 @@ def arrange_directories(directory):
     logger.debug("Outputs will be saved in " + imdir + " & " + datdir)
 
 
-def get_images(directory, endpoint):
-    """Get filenames for all images in current directory.
+def get_images(directory, endpoint, reference_image):
+    """Get filenames for all images in working directory.
     Return a list of filenames to analyse"""
 
     # Set image formats that will be considered.
@@ -61,7 +61,9 @@ def get_images(directory, endpoint):
     imanalyse = []
     for filename in allfiles:
         fullfilename = os.path.join(directory, filename)
-        imanalyse.append(fullfilename)
+        # Make sure that the reference image is not included in timeseries
+        if fullfilename != os.path.abspath(reference_image):
+            imanalyse.append(fullfilename)
 
     # If there aren't any new images to analyse, display error and exit
     if not imanalyse:

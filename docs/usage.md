@@ -28,8 +28,9 @@ A brief description of the inputs can be found with the `help` flag:
 
 ```text
 $ recolonyzer analyse --help
-usage: recolonyzer analyse [-h] [-d DIRECTORY] [-c] [-q] [-e]
-                           [-g GRID_FORMAT [GRID_FORMAT ...]] [-f FRACTION]
+usage: recolonyzer analyse [-h] [-d DIRECTORY] [-c] [-r REFERENCE_IMAGE] [-q]
+                           [-e] [-g GRID_FORMAT [GRID_FORMAT ...]]
+                           [-f FRACTION]
 ```
 
 **Directory**
@@ -40,7 +41,7 @@ will search in the current directory.
 
 !!! info "Please note"
 
-    ReColonyzer analyses **all images** files found in the given `directory`.
+    ReColonyzer analyses **all images** found in the given `directory`.
     These are the files with the extension .jpg, .jpeg, .tif, .tiff or .png.
     ReColonyzer always assumes that alphabetical ordering of the images
     matches temporal order. This is why we recommend to rename all the image
@@ -109,6 +110,23 @@ Example:
 ```bash
 recolonyzer analyse -c
 ```
+**Reference image**
+
+In order to compare experiments in which the timelapse images were taken using different camera settings, ReColonyzer allows the users to provide a reference picture for the calibration. The path to this image can be specified using the parameter `-r` or `--reference_image`.
+
+The reference must be an image showing a white and black paper next to each other, and must be taken using the same camera settings as the image series that are being analysed.
+
+By default, ReColonyzer will not use any image for the calibration. However, it is highly recommended to provide one.
+
+Example:
+```bash
+recolonyzer analyse -r ./reference/Ref_ISO400.png
+```
+
+!!! info "Please note"
+
+    It is recommended not to have the reference image together with the rest of images that will be analysed. Instead, we recommend to create a subfolder or to place the reference image in another path.
+    This is because during the analysis, **all images** in the directory will be analysed except the reference image. However, if the parameter `-r` is not specified and a reference image is found in the same directory, this reference picture will also be analysed and treated in the same way as the rest of the pictures.
 
 **Other parameters**
 
