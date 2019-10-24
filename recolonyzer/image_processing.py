@@ -11,7 +11,7 @@ from scipy.signal import find_peaks
 from tqdm import tqdm
 
 
-def get_agar_spot_color(im):
+def get_agar_spot_color(im, mode="agarspot"):
     """Get the color value of the agar and the spot.
     Obtain the values by checking the largest two peaks in the color histogram.
     """
@@ -21,14 +21,21 @@ def get_agar_spot_color(im):
     bincnt = np.bincount(im_)
 
     # Find peaks in histogram
-    peaks, _ = find_peaks(bincnt, width=1)
+    peaks, _ = find_peaks(bincnt, width=3)
     vals = bincnt[peaks]
     idx = np.argsort(vals)[::-1]
 
-    # Take first peak: this will be the agar
+    # Take first peak: this will be the agar, as it's the most abundant color
     color_agar = peaks[idx[0]]
-    # Take second peak: these will be the spots
-    color_spot = peaks[idx[1]]
+
+    if mode == "agarspot":
+        # Force the color of the spot to be higher than the color of the agar.
+        second_idx = idx[idx > idx[0]]
+        color_spot = peaks[second_idx[0]]
+    else:
+        # Take second peak: these will be the second most abundant color
+        color_spot = peaks[idx[1]]
+
     return int(color_agar), int(color_spot)
 
 
@@ -38,7 +45,7 @@ def get_position_grid(im, nrow, ncol, frac):
     Return the position of the grid and the size of the scaled the pattern.
     """
     # Find color values of agar and spots
-    color_agar, color_spot = get_agar_spot_color(im)
+    color_agar, color_spot = get_agar_spot_color(im, mode="agarspot")
     # Size of the given image.
     h, w = im.shape
 
@@ -85,7 +92,8 @@ def calibration_maxmin(ref_img):
         reference_image = cv2.imread(ref_img, cv2.IMREAD_GRAYSCALE)
 
         # Take highest 2 peaks: these will be the black and white colors
-        color_peak1, color_peak2 = get_agar_spot_color(reference_image)
+        color_peak1, color_peak2 = get_agar_spot_color(
+            reference_image, mode="twomain")
 
         min_ref = min(color_peak1, color_peak2)
         max_ref = max(color_peak1, color_peak2)
