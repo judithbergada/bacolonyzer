@@ -7,8 +7,9 @@ import time
 import cv2
 import numpy as np
 import pandas as pd
-from recolonyzer import filesystem, image_processing
 from scipy.signal import find_peaks
+
+from bacolonyzer import filesystem, image_processing
 
 logger = logging.getLogger(__name__)
 

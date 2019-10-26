@@ -2,27 +2,28 @@
 
 from distutils.core import setup
 
-import recolonyzer
 import setuptools
 
+import bacolonyzer
+
 _DESCRIPTION = """\
-ReColonyzer is a software to quantify the cell density of bacterial cultures
+BaColonyzer is a software to quantify the cell density of bacterial cultures
 from timecourse pictures. It uses image analysis tools to determine the fitness
 of spotted cultures of bacteria grown on solid agar.
 """
 
 setup(
-    name='recolonyzer',
-    version=recolonyzer.__version__,
+    name='bacolonyzer',
+    version=bacolonyzer.__version__,
     description='Analyse timeseries of QFA images',
     author='Judith Bergada',
     author_email='judithbergada@gmail.com',
-    url='https://github.com/judithbergada/recolonyzer',
+    url='https://github.com/judithbergada/bacolonyzer',
     packages=setuptools.find_packages(),
     long_description=_DESCRIPTION,
     license='MIT',
     entry_points={
-        'console_scripts': ['recolonyzer=recolonyzer.commands.entrypoint:run'],
+        'console_scripts': ['bacolonyzer=bacolonyzer.commands.entrypoint:run'],
     },
     python_requires='>3.4, <4',
     install_requires=[

@@ -1,8 +1,8 @@
-"""Definition of all commands available in ReColonyzer."""
+"""Definition of all commands available in BaColonyzer."""
 import logging
 
-from recolonyzer import analysis, filesystem, utils
-from recolonyzer.commands import abstract
+from bacolonyzer import analysis, filesystem, utils
+from bacolonyzer.commands import abstract
 
 logger = logging.getLogger(__name__)
 

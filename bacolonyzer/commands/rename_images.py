@@ -3,7 +3,8 @@ import glob
 import os
 
 from PIL import Image
-from recolonyzer.commands import abstract
+
+from bacolonyzer.commands import abstract
 
 
 class RenameImagesCommand(abstract.AbstractCommand):

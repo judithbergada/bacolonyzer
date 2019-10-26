@@ -3,7 +3,7 @@ import abc
 
 class AbstractCommand:
     """Abstract class used to define shared logic for all commands in
-    recolonyzer."""
+    bacolonyzer."""
 
     # Name for the command.
     _SUBCOMMAND = None
@@ -11,7 +11,7 @@ class AbstractCommand:
     _DESCRIPTION = None
 
     def register_parser(self, subparsers):
-        # Register this class as a subcommand of the main recolonyzer script.
+        # Register this class as a subcommand of the main bacolonyzer script.
         group = subparsers.add_parser(
             self._SUBCOMMAND,
             help=self._DESCRIPTION,

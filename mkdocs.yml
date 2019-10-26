@@ -1,9 +1,9 @@
-site_name: ReColonyzer
+site_name: BaColonyzer
 docs_dir: docs
 site_dir: site
 
-repo_name: "judithbergada/recolonyzer"
-repo_url: "https://github.com/judithbergada/recolonyzer"
+repo_name: "judithbergada/bacolonyzer"
+repo_url: "https://github.com/judithbergada/bacolonyzer"
 edit_uri: "tree/master/docs/"
 
 # Google Analytics
@@ -41,6 +41,6 @@ markdown_extensions:
 extra:
   social:
     - type: github-alt
-      link: https://github.com/judithbergada/recolonyzer
+      link: https://github.com/judithbergada/bacolonyzer
     - type: "twitter"
       link: "https://twitter.com/j_bergada"

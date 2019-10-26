@@ -7,7 +7,7 @@ cache: pip
 install:
   - pip install -e .
 script:
-  - recolonyzer --help
+  - bacolonyzer --help
 before_deploy:
   - pip install mkdocs mkdocs-material
   - mkdocs build --verbose --clean --strict

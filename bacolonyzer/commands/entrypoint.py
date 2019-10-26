@@ -2,8 +2,8 @@
 
 import argparse
 
-import recolonyzer
-from recolonyzer import commands
+import bacolonyzer
+from bacolonyzer import commands
 
 
 # Entrypoint from the command line.
@@ -17,9 +17,9 @@ def run():
         "--version",
         help="show current version",
         action='version',
-        version="ReColonyzer {}".format(recolonyzer.__version__))
+        version="BaColonyzer {}".format(bacolonyzer.__version__))
 
-    # Register all possible commands of ReColonyzer to the main inputs parser.
+    # Register all possible commands of BaColonyzer to the main inputs parser.
     subparsers = parser.add_subparsers()
     commands.AnalyseCommand().register_parser(subparsers)
     commands.RenameImagesCommand().register_parser(subparsers)
