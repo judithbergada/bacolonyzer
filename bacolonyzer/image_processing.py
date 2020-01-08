@@ -69,7 +69,8 @@ def get_position_grid(im, nrow, ncol, frac):
             np.linspace(min_fraction, max_fraction, iterations),
             desc='Fitting pattern...'):
         # Scale the pattern to the fraction of the given image.
-        pat_h, pat_w = int(h * fraction), int(w * fraction)
+        pat_w = int(w * fraction)
+        pat_h = int(pat_w * nrow / ncol)
         pattern_scaled = cv2.resize(pattern, (pat_w, pat_h))
         # Match the scaled pattern with the image.
         res = cv2.matchTemplate(im, pattern_scaled, cv2.TM_SQDIFF_NORMED)

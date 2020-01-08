@@ -2,9 +2,8 @@ import datetime
 import glob
 import os
 
-from PIL import Image
-
 from bacolonyzer.commands import abstract
+from PIL import Image
 
 
 class RenameImagesCommand(abstract.AbstractCommand):
@@ -86,10 +85,17 @@ class RenameImagesCommand(abstract.AbstractCommand):
                 current_datetime += delta_time
             else:
                 # Obtain date and time from image metadata
-                exif_data = Image.open(file_path)._getexif()[36867]
-                d_t = datetime.datetime.strptime(exif_data,
-                                                 '%Y:%m:%d %H:%M:%S')
-                date_time = d_t.strftime("%Y-%m-%d_%H-%M-%S")
+                exif_data = Image.open(file_path)._getexif()
+                if not exif_data:
+                    raise RuntimeError(
+                        '''Metadata is not available from these images.
+                        Please, use parameters -m, -s and -i
+                        to properly rename your images.''')
+                else:
+                    exif_data = exif_data[36867]
+                    d_t = datetime.datetime.strptime(exif_data,
+                                                     '%Y:%m:%d %H:%M:%S')
+                    date_time = d_t.strftime("%Y-%m-%d_%H-%M-%S")
 
             # Create new file name
             new_file_name = args.prefix + date_time + extension
