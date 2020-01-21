@@ -41,6 +41,22 @@ In order to ensure an accurate analysis of each colony, BaColonyzer divides the 
 **Figure 4.** BaColonyzer divides the plate into patches containg colony spots.
 Each patch is normalised by subtracting the color of the agar.
 
-Cell density of the colonies is then computed as the sum of all intensity values of the patch, divided by the number of pixels. Results are also normalised (divided by 255) to be in range 0-1.
+Cell density of the colonies is then computed as the sum of all intensity values of the patch, divided by the number of pixels.
+
+By default, results are also normalised (divided by 255) to be in range 0-1. Alternatively, in order to compare experiments in which the timelapse images were taken using different camera settings, BaColonyzer allows the users to provide a reference picture for the normalization. This must be an image showing a white and black paper next to each other, and must be taken using the same camera settings as the image series that are being analysed (Figure 5). The reference image is imported in grayscale and used to generate a histogram as shown in Figure 1. In this case, the peaks of the histogram correspond to the intensity values of the black and white colors, which can be used to calibrate different sets of images using the expression below:
+
+<center>
+$NIV = \frac{OIV - min_{ref}}{max_{ref} - min_{ref}},$
+</center>
+
+where NIV are the new intensity values of each image, OIV are the original values,
+$min_{ref}$ is the intensity of the white color, and $max_{ref}$ is the intensity of the black color.
+
+<center>
+![](assets/Figure5.JPEG){width=55%}
+</center>
+**Figure 5.** Example of a reference image. Black and white papers allow to
+normalize the results accounting for different camera settings.
+
 
 **Enjoy using BaColonyzer!**

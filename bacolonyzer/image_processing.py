@@ -51,7 +51,7 @@ def get_position_grid(im, nrow, ncol, frac):
 
     #Create the pattern of circles following the grid structure.
     rpix = int(h / nrow)  # Set random size of window that will later be scaled
-    rspot = int((rpix * 0.7) / 2)  # Set random size of spot radius to scale
+    rspot = int((rpix * 0.5) / 2)  # Set random size of spot radius to scale
     pattern = np.ones((nrow * rpix, ncol * rpix), dtype=np.uint8) * color_agar
     for i, j in itertools.product(range(nrow), range(ncol)):
         cv2.circle(pattern,
