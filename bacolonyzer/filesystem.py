@@ -77,20 +77,16 @@ def get_file_name(image_path):
     return os.path.basename(os.path.splitext(image_path)[0])
 
 
-def save_outputs(file_names, output_dfs, output_images, output_base_dir):
-    """Saves outputs."""
-    logger.debug("Saving outputs...")
+def save_output(file_name, output_df, output_image, output_base_dir):
+    """Saves output."""
 
-    for file_name, output_df, output_image in zip(file_names, output_dfs,
-                                                  output_images):
-
-        # Save DataFrame of output metrics.
-        output_df.to_csv(
-            os.path.join(output_base_dir, "Output_Data",
-                         "{}.out".format(file_name)),
-            sep="\t",
-            index=False)
-        # Save Image mask
-        img_outputs_dir = os.path.join(output_base_dir, "Output_Images",
-                                       "{}.png".format(file_name))
-        cv2.imwrite(img_outputs_dir, output_image)
+    # Save DataFrame of output metrics.
+    output_df.to_csv(
+        os.path.join(output_base_dir, "Output_Data",
+                     "{}.out".format(file_name)),
+        sep="\t",
+        index=False)
+    # Save Image mask
+    img_outputs_dir = os.path.join(output_base_dir, "Output_Images",
+                                   "{}.png".format(file_name))
+    cv2.imwrite(img_outputs_dir, output_image)

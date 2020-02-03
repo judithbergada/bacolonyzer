@@ -32,6 +32,14 @@ def get_agar_spot_color(im, mode="agarspot"):
         # Force the color of the spot to be higher than the color of the agar.
         second_idx = idx[idx > idx[0]]
         color_spot = peaks[second_idx[0]]
+
+        # Set limits that are resonable to avoid noise affecting results
+        lower_lim_spots = 2 * color_agar
+        upper_lim_spots = 0.7 * im_.max()
+        if color_spot < lower_lim_spots:
+            color_spot = min(lower_lim_spots, upper_lim_spots)
+        elif color_spot > upper_lim_spots:
+            color_spot = max(lower_lim_spots, upper_lim_spots)
     else:
         # Take second peak: these will be the second most abundant color
         color_spot = peaks[idx[1]]
@@ -49,7 +57,7 @@ def get_position_grid(im, nrow, ncol, frac):
     # Size of the given image.
     h, w = im.shape
 
-    #Create the pattern of circles following the grid structure.
+    # Create the pattern of circles following the grid structure.
     rpix = int(h / nrow)  # Set random size of window that will later be scaled
     rspot = int((rpix * 0.5) / 2)  # Set random size of spot radius to scale
     pattern = np.ones((nrow * rpix, ncol * rpix), dtype=np.uint8) * color_agar
