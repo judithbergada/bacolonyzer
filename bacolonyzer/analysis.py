@@ -2,14 +2,14 @@
 """
 import logging
 import os
+import re
 import time
 
 import cv2
 import numpy as np
 import pandas as pd
-from scipy.signal import find_peaks
-
 from bacolonyzer import filesystem, image_processing
+from scipy.signal import find_peaks
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 def analyse_timeseries_qfa(images_paths,
                            nrow,
                            ncol,
+                           output_dir,
                            light_correction=False,
                            fraction=0.8,
                            reference_image=""):
@@ -73,8 +74,6 @@ def analyse_timeseries_qfa(images_paths,
     else:
         min_ref, max_ref = 0, 255
 
-    output_dfs = []
-    output_images = []
     logger.debug("Analysing each of the images:")
     for file_name in images_paths:
 
@@ -106,19 +105,20 @@ def analyse_timeseries_qfa(images_paths,
         arr = (arr - min_ref) / (max_ref - min_ref)
 
         # Measure culture phenotypes.
-        output_dfs.append(
-            measure_outputs(arr, mask, pat_h, pat_w, nrow, ncol, file_name,
-                            spots, light_correction))
+        df = measure_outputs(arr, mask, pat_h, pat_w, nrow, ncol, file_name,
+                             spots, light_correction)
 
         # Save mask for a visual check.
-        output_images.append(mask.astype(np.uint8) * 255)
+        mask = mask.astype(np.uint8) * 255
 
-        # Reset mask to avoid problems in the next iteration.
-        mask = None
         logger.debug("Analysis complete for %s", os.path.basename(file_name))
+
+        # Saving output.
+        base_name = filesystem.get_file_name(file_name)
+        filesystem.save_output(base_name, df, mask, output_dir)
+
     logger.debug("All analyses finished in {:.2f} seconds".format(time.time() -
                                                                   start_time))
-    return output_dfs, output_images
 
 
 def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
@@ -195,6 +195,7 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
 
     # Save final outputs
     fname = filesystem.get_file_name(file_name)
+    brcod = re.sub("\D[\d]+-[\d]+-[\d]+.*", "", fname)
     return pd.DataFrame({
         "Row": allrows,
         "Column": allcols,
@@ -203,6 +204,6 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
         "ColonyMean": allcolonymeans,
         "ColonyVariance": allcolonyvariance,
         "BackgroundMean": allbackgroundmeans,
-        "Barcode": [fname[0:15]] * len(allrows),
+        "Barcode": [brcod] * len(allrows),
         "Filename": [fname] * len(allrows),
     })

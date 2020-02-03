@@ -95,16 +95,13 @@ class AnalyseCommand(abstract.AbstractCommand):
                                           args.reference_image)
 
         # Perform main logic.
-        output_dfs, output_images = analysis.analyse_timeseries_qfa(
+        analysis.analyse_timeseries_qfa(
             imanalyse,
             nrow,
             ncol,
+            fdir,
             light_correction=args.light_correction_off,
             fraction=args.fraction,
             reference_image=args.reference_image)
-
-        # Save outputs.
-        file_names = [filesystem.get_file_name(f) for f in imanalyse]
-        filesystem.save_outputs(file_names, output_dfs, output_images, fdir)
 
         logger.info("No more images to analyse. I'm done")
