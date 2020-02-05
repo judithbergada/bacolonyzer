@@ -11,7 +11,7 @@ from scipy.signal import find_peaks
 from tqdm import tqdm
 
 
-def get_agar_spot_color(im, mode="agarspot"):
+def get_agar_spot_color(im):
     """Get the color value of the agar and the spot.
     Obtain the values by checking the largest two peaks in the color histogram.
     """
@@ -28,21 +28,17 @@ def get_agar_spot_color(im, mode="agarspot"):
     # Take first peak: this will be the agar, as it's the most abundant color
     color_agar = peaks[idx[0]]
 
-    if mode == "agarspot":
-        # Force the color of the spot to be higher than the color of the agar.
-        second_idx = idx[idx > idx[0]]
-        color_spot = peaks[second_idx[0]]
+    # Force the color of the spot to be higher than the color of the agar.
+    second_idx = idx[idx > idx[0]]
+    color_spot = peaks[second_idx[0]]
 
-        # Set limits that are resonable to avoid noise affecting results
-        lower_lim_spots = 2 * color_agar
-        upper_lim_spots = 0.7 * im_.max()
-        if color_spot < lower_lim_spots:
-            color_spot = min(lower_lim_spots, upper_lim_spots)
-        elif color_spot > upper_lim_spots:
-            color_spot = max(lower_lim_spots, upper_lim_spots)
-    else:
-        # Take second peak: these will be the second most abundant color
-        color_spot = peaks[idx[1]]
+    # Set limits that are resonable to avoid noise affecting results
+    lower_lim_spots = 2 * color_agar
+    upper_lim_spots = 0.7 * im_.max()
+    if color_spot < lower_lim_spots:
+        color_spot = min(lower_lim_spots, upper_lim_spots)
+    elif color_spot > upper_lim_spots:
+        color_spot = max(lower_lim_spots, upper_lim_spots)
 
     return int(color_agar), int(color_spot)
 
@@ -53,7 +49,7 @@ def get_position_grid(im, nrow, ncol, frac):
     Return the position of the grid and the size of the scaled the pattern.
     """
     # Find color values of agar and spots
-    color_agar, color_spot = get_agar_spot_color(im, mode="agarspot")
+    color_agar, color_spot = get_agar_spot_color(im)
     # Size of the given image.
     h, w = im.shape
 
@@ -100,12 +96,12 @@ def calibration_maxmin(ref_img):
         # Open reference image and get all the intensity values
         reference_image = cv2.imread(ref_img, cv2.IMREAD_GRAYSCALE)
 
-        # Take highest 2 peaks: these will be the black and white colors
-        color_peak1, color_peak2 = get_agar_spot_color(
-            reference_image, mode="twomain")
+        # # Take 1% and 99% quantiles of the reference image to remove noise
+        quants = np.quantile(reference_image.ravel(), [0.01, 0.99])
+        reference_image = np.clip(reference_image, *quants)
 
-        min_ref = min(color_peak1, color_peak2)
-        max_ref = max(color_peak1, color_peak2)
+        min_ref = reference_image.min()
+        max_ref = reference_image.max()
     else:
         logger.info(
             """Reference image not found. Calibration not performed.""")
