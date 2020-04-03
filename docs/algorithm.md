@@ -58,4 +58,13 @@ Each patch is normalised by subtracting the color of the agar.
 
 At the end, BaColonyzer provides a big table with statistics of each colony, including colony mean, colony variance, background mean, and background variance. Normalized intensity values of each patch (NI) are computed as the sum of all intensity values of the patch, divided by the number of pixels. Results are stored as Output Data. Furthermore, in order to visually check that the grid location was achieved properly, BaColonyzer provides some Output Images. These are binary images resulting from an Otus’s Binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), which is performed after the trimming step to let the users check whether the grid location was successful.  
 
+## Flowchart
+
+A flowchart showing the algorithm of BaColonyzer is found below:
+
+<center>
+![](assets/Algorithm_BaColonyzer.jpeg){width=99%}
+</center>
+**Figure 6.** Flowchart of BaColonyzer algorithm.
+
 **Enjoy using BaColonyzer!**
