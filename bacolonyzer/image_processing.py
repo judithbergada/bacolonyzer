@@ -30,7 +30,10 @@ def get_agar_spot_color(im):
 
     # Force the color of the spot to be higher than the color of the agar.
     second_idx = idx[idx > idx[0]]
-    color_spot = peaks[second_idx[0]]
+    if len(second_idx) == 0:
+        color_spot = 0.7 * im_.max()
+    else:
+        color_spot = peaks[second_idx[0]]
 
     # Set limits that are resonable to avoid noise affecting results
     lower_lim_spots = 2 * color_agar
