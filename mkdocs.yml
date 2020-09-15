@@ -44,7 +44,7 @@ extra_javascript:
 # Customization
 extra:
   social:
-    - type: github-alt
+    - icon: fontawesome/brands/github
       link: https://github.com/judithbergada/bacolonyzer
-    - type: "twitter"
-      link: "https://twitter.com/j_bergada"
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/j_bergada
