@@ -83,6 +83,7 @@ class AnalyseCommand(abstract.AbstractCommand):
 
         # Print information of inputs to users.
         utils.summarise(args)
+        filesystem.reference_info(args.reference_image)
 
         # Get working directory.
         fdir = filesystem.get_directory(args.directory)

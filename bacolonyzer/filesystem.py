@@ -9,6 +9,17 @@ import cv2
 logger = logging.getLogger(__name__)
 
 
+def reference_info(ref_img=None):
+    if ref_img:
+        if not os.path.isfile(ref_img):
+            raise ValueError("""Reference image doesn't exist.
+            Check --reference_image.""")
+        else:
+            logger.debug("Using reference image: %s.", os.path.abspath(ref_img))
+    else:
+        logger.debug("Reference image not provided.")
+
+
 def get_directory(directory=None):
     """Get directory to work with."""
     # Set variable fdir = current directory, if user didn't specify another dir

@@ -1,6 +1,7 @@
 import datetime
 import glob
 import os
+import time
 
 from bacolonyzer.commands import abstract
 from PIL import Image
@@ -31,8 +32,9 @@ class RenameImagesCommand(abstract.AbstractCommand):
         parser.add_argument(
             "-p",
             "--prefix",
-            help="File prefix for the ranaming. Default: QFA_90000000001_.",
-            default="QFA_90000000001_")
+            help="""File prefix for the ranaming. Default: QFAxxxxxxxxxx_,
+            where xxxxxxxxxx is a random number.""",
+            default="QFA%s_" % (int(time.time())))
         parser.add_argument(
             "-m",
             "--no_read_metadata",
