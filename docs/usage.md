@@ -245,11 +245,11 @@ bacolonyzer rename_images --no_dry_run
 
 * `--prefix` or `-p`: this parameter defines the prefix of the new names.
   It is recommended to use a barcode for the images, and by default, BaColonyzer
-  will use QFA_90000000001_.
+  will use QFAxxxxxxxxxx_, where xxxxxxxxxx is a random number..
 
   Example:
   ```bash
-  bacolonyzer rename_images -p QFA_90000000001_
+  bacolonyzer rename_images -p QFAxxxxxxxxxx_
   ```
 
 **Enjoy using BaColonyzer!**
