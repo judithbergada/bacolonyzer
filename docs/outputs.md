@@ -22,6 +22,7 @@ Here, users can find, for each image and each colony area:
   cell density estimate for future calculations.
 * Area: area of the colony.
 * ColonyMean: mean intensity values of the colony.
+* ColonyVariance: variance of the intensity values of the colony.
 * BackgroundMean: mean intensity values of the agar.
 * Barcode: prefix used to name the image.
 * Filename: full name of the image.
