@@ -20,12 +20,12 @@ The intensity values of agar and spots are used to create an artificial image of
 **Figure 2.** Normalised squared difference is used to find the best match
 between a template of the plate and the last image.
 
-Once the best match is found, BaColonyzer is able to predict the location of the whole plate and to trim those parts of the image that might introduce noise (e.g. the borders). Image trimming, followed by automatic thresholding using Otsu’s binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), allow to get the position of the spots and the agar (Figure 3).
+Once the best match is found, BaColonyzer is able to predict the location of the whole plate and to trim those parts of the image that might introduce noise (e.g. the borders). Image trimming, followed by automatic thresholding using Otsu’s binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), allow to get the position of the colonies and the agar (Figure 3). In order to ensure that pixels belonging to the colonies are never considered as agar, dilation of colony spots is also performed [(The OpenCV Library)](https://docs.opencv.org/3.4/d9/d61/tutorial_py_morphological_ops.html). For that, the dilation kernel is considered to be 10% of the colony area.
 
 <center>
 ![](assets/Figure3.JPEG){width=80%}
 </center>
-**Figure 3.** Removal of plate borders and Otsu binarization are used to locate
+**Figure 3.** Removal of plate borders and Otsu binarization, followed by dilation of the white pixels, are used to locate
 the agar and the colonies.
 
 
@@ -39,7 +39,7 @@ By default, color intensities of the image are also normalised (divided by 255) 
 $NI = \frac{OI - min_{ref}}{max_{ref} - min_{ref}},$
 </center>
 
-where NI are the new intensity values of each image, OI are the original values,
+where NI are the new intensity values of each image, OI are the original intensity values,
 $min_{ref}$ is the intensity of the black color, and $max_{ref}$ is the intensity of the white color.
 
 <center>
@@ -56,7 +56,7 @@ Next, in order to ensure an accurate analysis of each colony, BaColonyzer divide
 **Figure 5.** BaColonyzer divides the plate into patches containg colony spots.
 Each patch is normalised by subtracting the color of the agar.
 
-At the end, BaColonyzer provides a big table with statistics of each colony, including colony mean, colony variance, background mean, and background variance. Normalized intensity values of each patch (NI) are computed as the sum of all intensity values of the patch, divided by the number of pixels. Results are stored as Output Data. Furthermore, in order to visually check that the grid location was achieved properly, BaColonyzer provides some Output Images. These are binary images resulting from an Otus’s Binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), which is performed after the trimming step to let the users check whether the grid location was successful.  
+At the end, BaColonyzer provides a big table with statistics of each colony, including normalised intensities (NI) of each patch, colony area, colony mean, colony variance, background mean, and background variance. Normalized intensity values of each patch (NI) are computed as the sum of all intensity values of the patch, divided by the number of pixels. Since all patches have exactly the same number of pixels, bigger colonies will result in higher normalized intensities, allowing to account also for the colony size. Results are stored as Output Data. Furthermore, in order to visually check that the grid location was achieved properly, BaColonyzer provides some Output Images. These are binary images resulting from an Otsu’s Binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), which is performed after the trimming step to let the users check whether the grid location was successful.  
 
 ## Flowchart
 

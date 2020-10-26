@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def reference_info(ref_img=None):
+    """Check if reference image exists and provide information to users."""
     if ref_img:
         if not os.path.isfile(ref_img):
             raise ValueError("""Reference image doesn't exist.
@@ -48,10 +49,8 @@ def arrange_directories(directory):
     logger.debug("Outputs will be saved in " + imdir + " & " + datdir)
 
 
-def get_images(directory, endpoint, reference_image):
-    """Get filenames for all images in working directory.
-    Return a list of filenames to analyse"""
-
+def get_all_images(directory):
+    """Returns an ordered list of images paths present in a given directory."""
     # Set image formats that will be considered.
     image_formats = {".jpg", ".jpeg", ".tif", ".tiff", ".png"}
     # Obtain all file names in the specified directory
@@ -64,14 +63,23 @@ def get_images(directory, endpoint, reference_image):
     ]
     allfiles.sort()
 
+    all_file_names = [os.path.join(directory, p) for p in allfiles]
+    return all_file_names
+
+
+def get_images(directory, endpoint, reference_image):
+    """Get filenames for all images in working directory.
+    Returns a list of filenames to analyse."""
+
+    all_file_names = get_all_images(directory)
+
     # If endpoint is True, then take only first and last images
     if endpoint:
-        allfiles = [allfiles[-1]]
+        all_file_names = [all_file_names[-1]]
 
     # Obtain all images to analyse
     imanalyse = []
-    for filename in allfiles:
-        fullfilename = os.path.join(directory, filename)
+    for fullfilename in all_file_names:
         # Make sure that the reference image is not included in timeseries
         if fullfilename != os.path.abspath(reference_image):
             imanalyse.append(fullfilename)

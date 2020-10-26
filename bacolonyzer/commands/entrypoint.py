@@ -23,6 +23,7 @@ def run():
     subparsers = parser.add_subparsers()
     commands.AnalyseCommand().register_parser(subparsers)
     commands.RenameImagesCommand().register_parser(subparsers)
+    commands.StabilizeImagesCommand().register_parser(subparsers)
 
     # Actually parsing the inputs given by the user.
     options = parser.parse_args()

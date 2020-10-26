@@ -56,9 +56,10 @@ def analyse_timeseries_qfa(images_paths,
     im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
 
     # Find spots and agar based on an automatic threshold and last image
-    _, mask = cv2.threshold(
+    _, mask_base = cv2.threshold(
         np.array(im_, dtype=np.uint8), 0, 255,
         cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    mask = image_processing.get_mask(mask_base, nrow, ncol)
 
     # Locate the position of the spots and the agar into different masks.
     grd = np.ones(mask.shape, dtype=bool)

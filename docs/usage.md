@@ -1,22 +1,26 @@
 # Usage
 
-BaColonyzer has two main commands available for the users:
+BaColonyzer has three main commands available for the users:
 
 * `bacolonyzer analyse`: This is the most important command and is needed
   to analyse timeseries of QFA images. It locates the bacterial cultures on
-  the plate, identifies spots and agar, and generates output files for each
+  the plate, identifying spots and agar, and it generates output files for each
   image. The outputs contain the cell density estimates and the area of each
   spotted colony.
 
+* `bacolonyzer stabilize_images`: This is a very useful command to stabilize
+the images that may have been moved or rotated during the experiment. It is
+very important to guarantee the precision and reliability of the results.
+
 * `bacolonyzer rename_images`: This is a useful command to rename the image
-files accordig to the recommended date time format:
-QFA_90000000001_YYYY-MM-DD_hh-mm-ss.jpeg.
+files according to the recommended date-time format:
+QFAxxxxxxxxxx_YYYY-MM-DD_hh-mm-ss.jpeg, where xxxxxxxxxx is a random number.
 
 A short description can be obtained as follows:
 
 ```text
 $ bacolonyzer --help
-usage: bacolonyzer [-h] [-v] {analyse,rename_images}
+usage: bacolonyzer [-h] [-v] {analyse,rename_images,stabilize_images}
 ```
 
 
@@ -145,12 +149,60 @@ bacolonyzer analyse -q
 bacolonyzer analyse -e
 ```
 
+## Stabilize images
+
+BaColonyzer offers the possibility to stabilize the image files of a directory
+to ensure that undesired rotations of movements do not affect the final results.
+A brief description of the inputs can be found using the `help` flag:
+
+```text
+$ bacolonyzer stabilize_images --help
+usage: bacolonyzer rename_images [-h] [-d DIRECTORY] [-o OUTPUT_DIRECTORY] [-q]
+```
+
+**Directory**
+
+Using `--directory` or `-d`, users specify the path to the folder that
+contains all image files to stabilize. If not specified, BaColonyzer
+will search in the current directory.
+
+Example:
+```bash
+bacolonyzer stabilize_images -d /Users/myname/Documents/2019-07-Saureus
+```
+
+**Output directory**
+
+Using `--output_directory` or `-o`, users specify the new directory where the
+stabilized images will be stored. By default, BaColonyzer creates a new folder
+inside the current directory, which is named "corrected_images".
+
+!!! info "Please note"
+
+    If the output directory does not exist, it will be created. If it exists,
+    the images inside this directory will be overwritten.
+
+Example:
+```bash
+bacolonyzer stabilize_images -o /Users/myname/Documents/2019-07-Saureus_correct
+```
+
+**Other parameters**
+
+* `--quiet` or `-q`: using this flag, users can suppress any information
+  messages printed in the screen during analysis.
+
+Examples:
+```bash
+bacolonyzer stabilize_images -q
+```
+
 
 ## Rename images
 
 BaColonyzer offers the possibility to rename the image files of a directory
 according to a format which is highly recommended:
-QFA_90000000001_YYYY-MM-DD_hh-mm-ss.jpeg.
+QFAxxxxxxxxxx_YYYY-MM-DD_hh-mm-ss.jpeg, where xxxxxxxxxx is a random number.
 A brief description of the inputs can be found using the `help` flag:
 
 ```text
@@ -245,7 +297,7 @@ bacolonyzer rename_images --no_dry_run
 
 * `--prefix` or `-p`: this parameter defines the prefix of the new names.
   It is recommended to use a barcode for the images, and by default, BaColonyzer
-  will use QFAxxxxxxxxxx_, where xxxxxxxxxx is a random number..
+  will use QFAxxxxxxxxxx_, where xxxxxxxxxx is a random number.
 
   Example:
   ```bash

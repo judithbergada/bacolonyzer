@@ -74,7 +74,7 @@ def get_position_grid(im, nrow, ncol, frac):
     found = None
     for fraction in tqdm(
             np.linspace(min_fraction, max_fraction, iterations),
-            desc='Fitting pattern...'):
+            desc='Fitting grid pattern...'):
         # Scale the pattern to the fraction of the given image.
         pat_w = int(w * fraction)
         pat_h = int(pat_w * nrow / ncol)
@@ -88,6 +88,15 @@ def get_position_grid(im, nrow, ncol, frac):
             found = (min_val, min_loc, pat_h, pat_w)
     return found
 
+def get_mask (original_mask, nrow, ncol):
+    """Perform dilatation of the spots (and therefore reduction of the agar)."""
+    # Calculate patch size x,y
+    d_y = original_mask.shape[0]/nrow
+    d_x = original_mask.shape[1]/ncol
+    # Perform dilatation increasing the thickness by 10% of a patch size
+    kernel = np.ones((int(d_y*0.1),int(d_x*0.1)),np.uint8)
+    mymask = ~(cv2.dilate(~original_mask, kernel, iterations = 1))
+    return mymask
 
 def calibration_maxmin(ref_img):
     """Obtain minimum and maximum intensity values captured by the camera by
