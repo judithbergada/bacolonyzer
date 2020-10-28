@@ -93,8 +93,8 @@ def get_mask (original_mask, nrow, ncol):
     # Calculate patch size x,y
     d_y = original_mask.shape[0]/nrow
     d_x = original_mask.shape[1]/ncol
-    # Perform dilatation increasing the thickness by 10% of a patch size
-    kernel = np.ones((int(d_y*0.1),int(d_x*0.1)),np.uint8)
+    # Perform dilatation increasing the thickness by 5% of a patch size
+    kernel = np.ones((int(d_y*0.05),int(d_x*0.05)),np.uint8)
     mymask = ~(cv2.dilate(~original_mask, kernel, iterations = 1))
     return mymask
 

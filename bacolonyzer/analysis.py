@@ -157,6 +157,8 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
             # for differences in intensity between AND within images
             if correction:
                 backgr = np.mean(patch[~spots_patch])
+                if np.isnan(backgr):
+                    backgr = 0
             else:
                 backgr = 0
 

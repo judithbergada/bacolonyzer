@@ -20,7 +20,7 @@ The intensity values of agar and spots are used to create an artificial image of
 **Figure 2.** Normalised squared difference is used to find the best match
 between a template of the plate and the last image.
 
-Once the best match is found, BaColonyzer is able to predict the location of the whole plate and to trim those parts of the image that might introduce noise (e.g. the borders). Image trimming, followed by automatic thresholding using Otsu’s binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), allow to get the position of the colonies and the agar (Figure 3). In order to ensure that pixels belonging to the colonies are never considered as agar, dilation of colony spots is also performed [(The OpenCV Library)](https://docs.opencv.org/3.4/d9/d61/tutorial_py_morphological_ops.html). For that, the dilation kernel is considered to be 10% of the colony area.
+Once the best match is found, BaColonyzer is able to predict the location of the whole plate and to trim those parts of the image that might introduce noise (e.g. the borders). Image trimming, followed by automatic thresholding using Otsu’s binarization [(The OpenCV Library)](https://docs.opencv.org/3.4.3/d7/d4d/tutorial_py_thresholding.html), allow to get the position of the colonies and the agar (Figure 3). In order to ensure that pixels belonging to the colonies are never considered as agar, dilation of colony spots is also performed [(The OpenCV Library)](https://docs.opencv.org/3.4/d9/d61/tutorial_py_morphological_ops.html). For that, the dilation kernel is considered to be 5% of the colony area.
 
 <center>
 ![](assets/Figure3.JPEG){width=80%}
