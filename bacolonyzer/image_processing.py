@@ -78,6 +78,10 @@ def get_position_grid(im, nrow, ncol, frac):
         # Scale the pattern to the fraction of the given image.
         pat_w = int(w * fraction)
         pat_h = int(pat_w * nrow / ncol)
+        # Fix bug that might appear in images with special proportions
+        if pat_h > h:
+            pat_h = int(h * fraction)
+            pat_w = int(pat_h * ncol / nrow)
         pattern_scaled = cv2.resize(pattern, (pat_w, pat_h))
         # Match the scaled pattern with the image.
         res = cv2.matchTemplate(im, pattern_scaled, cv2.TM_SQDIFF_NORMED)
