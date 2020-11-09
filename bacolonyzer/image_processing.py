@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 
 def get_agar_spot_color(im):
-    """Get the color value of the agar and the spot.
+    """Get the color value of the agar and the spots.
     Obtain the values by checking the largest two peaks in the color histogram.
     """
     im_ = np.asarray(im).ravel()
