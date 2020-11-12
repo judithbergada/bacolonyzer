@@ -13,14 +13,6 @@ before_deploy:
   - pip install mkdocs mkdocs-material
   - mkdocs build --verbose --clean --strict
 deploy:
-  - provider: pypi
-    user: judithbergada
-    password:
-      secure: eT4uNAHp4ZZFt322ebueRDJzdmTeebgQBCJzA0jOf0YpW2OdKzAnr7r+EjUWvl8IZL8f+6mx1PlEuMwUPu6oBQthMja8FGnxxYswxo2ZdbGGo9h9/X1bREu14ZvJMys45T8RPR9FALMQ1g5svuBpo6wrPjR74cTzOsF4okRnwZ8WwCM+drH4RKIZEbfMyq7g0o+ANodciw3ZSl0j7bMYdW03qvtKwLRKfzDSVRLKqzsRUI9OLNk0xgngu7PgFfdfCosxcbPlAcRbonx+cFEZ+3maIk877PRo/SBQU+atmmGXA3PIYJIMKUSirJKCCs1hXHHXIUSd5B/BQSOpo+LfxIjsSXy6U/ILqIOGB0YQEkCPOl/pCHSFbMr/g5LMfFuOSiX0M/u9HlSe0o8IpkmJnNyYoD9rQx8B6ntPl+Sy89zQxkT1d1Ocymv8j2yvlpr2yIcfqdnu9zWGkxxh71IuTbmkIb29ie4h8/ABUp8lI5cFfBAeJ3K+4bkI8bvuKV96y/oAkVH7L6ju1uFpyvvbRFCxZlHJ79x+C/YpHtRh6NWGwNkXWfWdvJ2mf2NDIOf7KDidpRUT6mJGAX6Qc/RdSRRbWRyXqTcdmLbo3ADRJlnS5ioTLoMKJORqKBw3mo0xOBPW+c3d7RQ0z53dXFtKZKOlvOGYSxAJDmkK8iMjNGc=
-    distributions: sdist bdist_wheel
-    on:
-      python: 3.8
-      tags: true
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
