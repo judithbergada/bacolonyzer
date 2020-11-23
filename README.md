@@ -1,6 +1,6 @@
 # BaColonyzer
 
-[![Travis (.org)](https://img.shields.io/travis/judithbergada/bacolonyzer?style=for-the-badge)](https://travis-ci.org/judithbergada/bacolonyzer) [![PyPI](https://img.shields.io/pypi/v/bacolonyzer?style=for-the-badge)](https://pypi.org/project/bacolonyzer/) [![PyPI - License](https://img.shields.io/pypi/l/bacolonyzer?style=for-the-badge)](https://github.com/judithbergada/bacolonyzer/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/bacolonyzer?style=for-the-badge)](https://pypi.org/project/bacolonyzer/) [![PyPI - License](https://img.shields.io/pypi/l/bacolonyzer?style=for-the-badge)](https://github.com/judithbergada/bacolonyzer/blob/master/LICENSE)
 
 by Judith Bergadà Pijuan.
 
