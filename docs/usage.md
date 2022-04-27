@@ -34,7 +34,7 @@ A brief description of the inputs can be found with the `help` flag:
 $ bacolonyzer analyse --help
 usage: bacolonyzer analyse [-h] [-d DIRECTORY] [-c] [-r REFERENCE_IMAGE] [-q]
                            [-e] [-g GRID_FORMAT [GRID_FORMAT ...]]
-                           [-f FRACTION]
+                           [-f FRACTION] [-l]
 ```
 
 **Directory**
@@ -102,7 +102,7 @@ bacolonyzer analyse -f 0.8
 
 **Light correction**
 
-By default, BaColonyzer normalises wach of the images and the colony areas by
+By default, BaColonyzer normalises all of the images and the colony areas by
 subtracting the value of the agar. This is highly recommended, since it will
 correct for differences in light intensities between and within images,
 and results will be more accurate.
@@ -114,13 +114,34 @@ Example:
 ```bash
 bacolonyzer analyse -c
 ```
+
+**Adaptive segmentation**
+
+In order to correct for images that show a very low contrast between colonies
+and background, and to improve the detection of spots, Bacolonyzer can perform
+an adaptive segmentation of the image.
+
+By default, BaColonyzer will not correct for that. However, you can enable
+this option with the parameter `-l` or `--low_contrasts`.
+
+Example:
+```bash
+bacolonyzer analyse -l
+```
+
 **Reference image**
 
-In order to compare experiments in which the timelapse images were taken using different camera settings, BaColonyzer allows the users to provide a reference picture for the calibration. The path to this image can be specified using the parameter `-r` or `--reference_image`.
+In order to compare experiments in which the timelapse images were taken using
+different camera settings, BaColonyzer allows the users to provide a reference
+picture for the calibration. The path to this image can be specified using the
+parameter `-r` or `--reference_image`.
 
-The reference must be an image showing a white and black paper next to each other, and must be taken using the same camera settings as the image series that are being analysed.
+The reference must be an image showing a white and black paper next to each
+other, and must be taken using the same camera settings as the image series
+that are being analysed.
 
-By default, BaColonyzer will not use any image for the calibration. However, it is highly recommended to provide one.
+By default, BaColonyzer will not use any image for the calibration. However,
+it is highly recommended to provide one.
 
 Example:
 ```bash
@@ -129,8 +150,14 @@ bacolonyzer analyse -r ./reference/Ref_ISO400.png
 
 !!! info "Please note"
 
-    It is recommended not to have the reference image together with the rest of images that will be analysed. Instead, we recommend to create a subfolder or to place the reference image in another path.
-    This is because during the analysis, **all images** in the directory will be analysed except the reference image. However, if the parameter `-r` is not specified and a reference image is found in the same directory, this reference picture will also be analysed and treated in the same way as the rest of the pictures.
+    It is recommended not to have the reference image together with the rest
+    of images that will be analysed. Instead, we recommend to create a
+    subfolder or to place the reference image in another path.
+    This is because during the analysis, **all images** in the
+    directory will be analysed except the reference image. However,
+    if the parameter `-r` is not specified and a reference image is
+    found in the same directory, this reference picture will also be
+    analysed and treated in the same way as the rest of the pictures.
 
 **Other parameters**
 
@@ -271,11 +298,13 @@ bacolonyzer rename_images -m -s "2019-08-11 12:30"
 
 !!! info "Please note"
 
-    This parameter will only be considered if users also require flag `-m`. The date time format must be given within quotes.
+    This parameter will only be considered if users also require flag `-m`.
+    The date time format must be given within quotes.
 
 **Dry run**
 
-By default, BaColonyzer will only show the renaming of the image files. However, to keep the users safe, it will not apply the modifications.
+By default, BaColonyzer will only show the renaming of the image files.
+However, to keep the users safe, it will not apply the modifications.
 
 In order to definitely rename all files, the flag `--no_dry_run` is needed.
 
