@@ -20,7 +20,8 @@ def analyse_timeseries_qfa(images_paths,
                            output_dir,
                            light_correction=False,
                            fraction=0.8,
-                           reference_image=""):
+                           reference_image="",
+                           low_contrasts=False):
     # Set timer
     start_time = time.time()
 
@@ -55,11 +56,22 @@ def analyse_timeseries_qfa(images_paths,
     h_bottom = int(min_loc[1] + pat_h)
     im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
 
-    # Find spots and agar based on an automatic threshold and last image
-    _, mask_base = cv2.threshold(
-        np.array(im_, dtype=np.uint8), 0, 255,
-        cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    mask = image_processing.get_mask(mask_base, nrow, ncol)
+    if not low_contrasts:
+        # Find spots and agar based on an automatic threshold and last image
+        _, mask_base = cv2.threshold(
+            np.array(im_, dtype=np.uint8), 0, 255,
+            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        mask = image_processing.get_mask(mask_base, nrow, ncol)
+    else:
+        # Get the block size for one element in the grid
+        block_size = (im_.shape / np.asarray([nrow, ncol])).astype(np.int).min()
+        # Make it an odd number
+        block_size = block_size + block_size % 2 - 1
+        # Find spots and agar based on an adaptive threshold and last image
+        mask_base = cv2.adaptiveThreshold(
+            np.array(im_, dtype=np.uint8), 255,
+            cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, block_size, 0)
+        mask = image_processing.get_mask(mask_base, nrow, ncol)
 
     # Locate the position of the spots and the agar into different masks.
     grd = np.ones(mask.shape, dtype=bool)
@@ -83,24 +95,31 @@ def analyse_timeseries_qfa(images_paths,
 
         # Assume area of spots will always be =< spots at last image, so
         # set all pixels that are not spots to agar to remove noise
-        arr_modified = arr.copy()
-        color_agar = np.mean(arr_modified[agar])
-        arr_modified[agar] = color_agar
+        color_agar = np.mean(arr[agar])
         arr_modified = cv2.GaussianBlur(img, (15, 15), 0)
 
-        # Set threshold automatically
-        thresh, _ = cv2.threshold(
-            np.array(arr_modified, dtype=np.uint8), 0, 255,
-            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-        # Define threshold value between agar color and automatic threshold
-        thresh = max((thresh + color_agar) / 2, color_agar + 1)
-
-        # Create mask to detect spots in each image.
-        # This will be used only to compute the area of the spots.
-        mask = np.ones(arr.shape, dtype=np.bool)
-        mask[arr < thresh] = False
-        mask[agar] = False
+        if not low_contrasts:
+            # Set threshold automatically
+            thresh, _ = cv2.threshold(
+                np.array(arr_modified, dtype=np.uint8), 0, 255,
+                cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            # Define threshold value between agar color and automatic threshold
+            thresh = max((thresh + color_agar) / 2, color_agar + 1)
+            # Create mask to detect spots in each image.
+            # This will be used only to compute the area of the spots.
+            mask = np.ones(arr.shape, dtype=np.bool)
+            mask[arr < thresh] = False
+            # Make sure that agar is not considered as spot
+            mask[agar] = False
+            # Save mask for a visual check.
+            mask = mask.astype(np.uint8) * 255
+        else:
+            # Set threshold based on an adaptive threshold
+            mask_img_modi = cv2.adaptiveThreshold(
+                np.array(arr_modified[min_loc[1]:h_bottom, min_loc[0]:w_right],
+                dtype=np.uint8), 255,
+                cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, block_size, 0)
+            mask = image_processing.get_mask(mask_img_modi, nrow, ncol)
 
         # Normalize image by using reference picture provided
         arr = (arr - min_ref) / (max_ref - min_ref)
@@ -108,9 +127,6 @@ def analyse_timeseries_qfa(images_paths,
         # Measure culture phenotypes.
         df = measure_outputs(arr, mask, pat_h, pat_w, nrow, ncol, file_name,
                              spots, light_correction)
-
-        # Save mask for a visual check.
-        mask = mask.astype(np.uint8) * 255
 
         logger.debug("Analysis complete for %s", os.path.basename(file_name))
 

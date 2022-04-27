@@ -92,13 +92,13 @@ def get_position_grid(im, nrow, ncol, frac):
             found = (min_val, min_loc, pat_h, pat_w)
     return found
 
-def get_mask (original_mask, nrow, ncol):
+def get_mask (original_mask, nrow, ncol, sensitivity = 0.05):
     """Perform dilatation of the spots (and therefore reduction of the agar)."""
     # Calculate patch size x,y
     d_y = original_mask.shape[0]/nrow
     d_x = original_mask.shape[1]/ncol
     # Perform dilatation increasing the thickness by 5% of a patch size
-    kernel = np.ones((int(d_y*0.05),int(d_x*0.05)),np.uint8)
+    kernel = np.ones((int(d_y*sensitivity),int(d_x*sensitivity)),np.uint8)
     mymask = ~(cv2.dilate(~original_mask, kernel, iterations = 1))
     return mymask
 

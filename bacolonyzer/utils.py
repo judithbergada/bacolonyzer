@@ -29,6 +29,11 @@ def summarise(args):
     else:
         logger.debug("Lighting correction turned off.")
 
+    if args.low_contrasts:
+        logger.debug("Adaptive segmentation for low contrasts turned on.")
+    else:
+        logger.debug("Adaptive segmentation for low contrasts turned off.")
+
     logger.debug("Analysis:")
     if args.endpoint:
         logger.debug("Analysing only last image in series.")

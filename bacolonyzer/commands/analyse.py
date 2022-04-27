@@ -73,6 +73,13 @@ class AnalyseCommand(abstract.AbstractCommand):
             to the grid. Adjust it if grid occupies a small part of the total image.
             Default: 0.8.""",
             default=0.8)
+        parser.add_argument(
+            "-l",
+            "--low_contrasts",
+            help="""Performs an adaptive segmentation of the image to correct
+            for low contrasts and improve the spot detection.
+            Default: False. Do not perform adaptive segmentation.""",
+            action="store_true")
 
     def run(self, args):
         # Setup logger
@@ -103,6 +110,7 @@ class AnalyseCommand(abstract.AbstractCommand):
             fdir,
             light_correction=args.light_correction_off,
             fraction=args.fraction,
-            reference_image=args.reference_image)
+            reference_image=args.reference_image,
+            low_contrasts=args.low_contrasts)
 
         logger.info("No more images to analyse. I'm done")
