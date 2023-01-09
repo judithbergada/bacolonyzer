@@ -107,7 +107,7 @@ def analyse_timeseries_qfa(images_paths,
             thresh = max((thresh + color_agar) / 2, color_agar + 1)
             # Create mask to detect spots in each image.
             # This will be used only to compute the area of the spots.
-            mask = np.ones(arr.shape, dtype=np.bool)
+            mask = np.ones(arr.shape, dtype=bool)
             mask[arr < thresh] = False
             # Make sure that agar is not considered as spot
             mask[agar] = False
