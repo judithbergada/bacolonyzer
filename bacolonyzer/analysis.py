@@ -64,7 +64,7 @@ def analyse_timeseries_qfa(images_paths,
         mask = image_processing.get_mask(mask_base, nrow, ncol)
     else:
         # Get the block size for one element in the grid
-        block_size = (im_.shape / np.asarray([nrow, ncol])).astype(np.int).min()
+        block_size = (im_.shape / np.asarray([nrow, ncol])).astype(int).min()
         # Make it an odd number
         block_size = block_size + block_size % 2 - 1
         # Find spots and agar based on an adaptive threshold and last image
