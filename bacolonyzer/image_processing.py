@@ -123,3 +123,19 @@ def calibration_maxmin(ref_img):
             """Reference image not found. Calibration not performed.""")
         min_ref, max_ref = 0, 255
     return (min_ref, max_ref)
+
+def show_grid_result (latest_image, pat_h, pat_w, nrow, ncol, output_dir):
+    """Create a new image showing the best grid match and the patches)."""
+        to_show_grid = cv2.imread(latest_image)
+        d_h = int(pat_h / nrow)
+        d_w = int(pat_w / ncol)
+        for i in range(nrow+1):
+            for j in range(ncol+1):
+                cv2.line(
+                    to_show_grid, (min_loc[0]+d_w*j, min_loc[1]),
+                    (min_loc[0]+d_w*j, min_loc[1]+d_h*(nrow)), (255,0,0), 5)
+            cv2.line(
+                to_show_grid, (min_loc[0], min_loc[1]+d_h*i),
+                (min_loc[0]+d_w*(ncol), min_loc[1]+d_h*i), (255,0,0), 5)
+        cv2.imwrite(os.path.join(output_dir, Output_Images, 'Grid_QC.png'),
+            to_show_grid)
