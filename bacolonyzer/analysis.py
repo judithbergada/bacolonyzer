@@ -57,7 +57,7 @@ def analyse_timeseries_qfa(images_paths,
     im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
     # Show the position of the pattern for visualization
     image_processing.show_grid_result(
-        latest_image, pat_h, pat_w, nrow, ncol, output_dir)
+        latest_image, min_loc, pat_h, pat_w, nrow, ncol, output_dir)
 
     if not low_contrasts:
         # Find spots and agar based on an automatic threshold and last image
