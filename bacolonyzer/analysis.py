@@ -1,5 +1,5 @@
-"""Functions to compute the outputs that will be saved.
-"""
+"""Functions to compute the outputs that will be saved."""
+
 import logging
 import os
 import re
@@ -14,14 +14,17 @@ from scipy.signal import find_peaks
 logger = logging.getLogger(__name__)
 
 
-def analyse_timeseries_qfa(images_paths,
-                           nrow,
-                           ncol,
-                           output_dir,
-                           light_correction=False,
-                           fraction=0.8,
-                           reference_image="",
-                           low_contrasts=False):
+def analyse_timeseries_qfa(
+    images_paths,
+    nrow,
+    ncol,
+    output_dir,
+    light_correction=False,
+    fraction=0.8,
+    reference_image="",
+    low_contrasts=False,
+    grid_by_peaks=False,
+):
     # Set timer
     start_time = time.time()
 
@@ -49,21 +52,26 @@ def analyse_timeseries_qfa(images_paths,
     im_n = np.array(im_n, dtype=np.uint8)
 
     _, min_loc, pat_h, pat_w = image_processing.get_position_grid(
-        im_n, nrow, ncol, fraction)
+        im_n, nrow, ncol, fraction, grid_by_peaks
+    )
 
     # Cut the original image with the size of the best pattern match.
     w_right = int(min_loc[0] + pat_w)
     h_bottom = int(min_loc[1] + pat_h)
-    im_ = im_n[min_loc[1]:h_bottom, min_loc[0]:w_right]
+    im_ = im_n[min_loc[1] : h_bottom, min_loc[0] : w_right]
     # Show the position of the pattern for visualization
     image_processing.show_grid_result(
-        latest_image, min_loc, pat_h, pat_w, nrow, ncol, output_dir)
+        latest_image, min_loc, pat_h, pat_w, nrow, ncol, output_dir
+    )
 
     if not low_contrasts:
         # Find spots and agar based on an automatic threshold and last image
         _, mask_base = cv2.threshold(
-            np.array(im_, dtype=np.uint8), 0, 255,
-            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            np.array(im_, dtype=np.uint8),
+            0,
+            255,
+            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU,
+        )
         mask = image_processing.get_mask(mask_base, nrow, ncol)
     else:
         # Get the block size for one element in the grid
@@ -72,8 +80,13 @@ def analyse_timeseries_qfa(images_paths,
         block_size = block_size + block_size % 2 - 1
         # Find spots and agar based on an adaptive threshold and last image
         mask_base = cv2.adaptiveThreshold(
-            np.array(im_, dtype=np.uint8), 255,
-            cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, block_size, 0)
+            np.array(im_, dtype=np.uint8),
+            255,
+            cv2.ADAPTIVE_THRESH_MEAN_C,
+            cv2.THRESH_BINARY_INV,
+            block_size,
+            0,
+        )
         mask = image_processing.get_mask(mask_base, nrow, ncol)
 
     # Locate the position of the spots and the agar into different masks.
@@ -92,9 +105,8 @@ def analyse_timeseries_qfa(images_paths,
 
     logger.debug("Analysing each of the images:")
     for file_name in images_paths:
-
         img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-        arr = img[min_loc[1]:h_bottom, min_loc[0]:w_right]
+        arr = img[min_loc[1] : h_bottom, min_loc[0] : w_right]
 
         # Assume area of spots will always be =< spots at last image, so
         # set all pixels that are not spots to agar to remove noise
@@ -104,8 +116,11 @@ def analyse_timeseries_qfa(images_paths,
         if not low_contrasts:
             # Set threshold automatically
             thresh, _ = cv2.threshold(
-                np.array(arr_modified, dtype=np.uint8), 0, 255,
-                cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+                np.array(arr_modified, dtype=np.uint8),
+                0,
+                255,
+                cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU,
+            )
             # Define threshold value between agar color and automatic threshold
             thresh = max((thresh + color_agar) / 2, color_agar + 1)
             # Create mask to detect spots in each image.
@@ -119,17 +134,25 @@ def analyse_timeseries_qfa(images_paths,
         else:
             # Set threshold based on an adaptive threshold
             mask_img_modi = cv2.adaptiveThreshold(
-                np.array(arr_modified[min_loc[1]:h_bottom, min_loc[0]:w_right],
-                dtype=np.uint8), 255,
-                cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, block_size, 0)
+                np.array(
+                    arr_modified[min_loc[1] : h_bottom, min_loc[0] : w_right],
+                    dtype=np.uint8,
+                ),
+                255,
+                cv2.ADAPTIVE_THRESH_MEAN_C,
+                cv2.THRESH_BINARY,
+                block_size,
+                0,
+            )
             mask = image_processing.get_mask(mask_img_modi, nrow, ncol)
 
         # Normalize image by using reference picture provided
         arr = (arr - min_ref) / (max_ref - min_ref)
 
         # Measure culture phenotypes.
-        df = measure_outputs(arr, mask, pat_h, pat_w, nrow, ncol, file_name,
-                             spots, light_correction)
+        df = measure_outputs(
+            arr, mask, pat_h, pat_w, nrow, ncol, file_name, spots, light_correction
+        )
 
         logger.debug("Analysis complete for %s", os.path.basename(file_name))
 
@@ -137,12 +160,12 @@ def analyse_timeseries_qfa(images_paths,
         base_name = filesystem.get_file_name(file_name)
         filesystem.save_output(base_name, df, mask, output_dir)
 
-    logger.debug("All analyses finished in {:.2f} seconds".format(time.time() -
-                                                                  start_time))
+    logger.debug(
+        "All analyses finished in {:.2f} seconds".format(time.time() - start_time)
+    )
 
 
-def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
-                    correction):
+def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots, correction):
     """Add intensity measures and other measurements to a final dictionary.
     This dictionary will be outputed as a data-frame.
     """
@@ -161,9 +184,9 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
             p_x = j * d_x  # Position x = ncol x dimension_x of window (d_x)
             p_y = i * d_y  # Position y = nrow x dimension_y of window (d_y)
             # Get window of this specific colony
-            patch = im[p_y:p_y + d_y, p_x:p_x + d_x]
-            mask_patch = mask[p_y:p_y + d_y, p_x:p_x + d_x]
-            spots_patch = spots[p_y:p_y + d_y, p_x:p_x + d_x]
+            patch = im[p_y : p_y + d_y, p_x : p_x + d_x]
+            mask_patch = mask[p_y : p_y + d_y, p_x : p_x + d_x]
+            spots_patch = spots[p_y : p_y + d_y, p_x : p_x + d_x]
 
             # Perform some normalization in order to remove outliers and noise.
             # The 1% and 99% quantile clipping is a good option.
@@ -218,14 +241,16 @@ def measure_outputs(im, mask, pat_h, pat_w, nrow, ncol, file_name, spots,
     # Save final outputs
     fname = filesystem.get_file_name(file_name)
     brcod = re.sub("\D[\d]+-[\d]+-[\d]+.*", "", fname)
-    return pd.DataFrame({
-        "Row": allrows,
-        "Column": allcols,
-        "Intensity": allintensities,
-        "Area": allareas,
-        "ColonyMean": allcolonymeans,
-        "ColonyVariance": allcolonyvariance,
-        "BackgroundMean": allbackgroundmeans,
-        "Barcode": [brcod] * len(allrows),
-        "Filename": [fname] * len(allrows),
-    })
+    return pd.DataFrame(
+        {
+            "Row": allrows,
+            "Column": allcols,
+            "Intensity": allintensities,
+            "Area": allareas,
+            "ColonyMean": allcolonymeans,
+            "ColonyVariance": allcolonyvariance,
+            "BackgroundMean": allbackgroundmeans,
+            "Barcode": [brcod] * len(allrows),
+            "Filename": [fname] * len(allrows),
+        }
+    )

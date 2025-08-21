@@ -100,6 +100,23 @@ Example:
 bacolonyzer analyse -f 0.8
 ```
 
+**grid_by_peaks**
+
+The default method to find the position of the agar plate and the colonies
+is by using the grid format. However, if the agar plate is well aligned (no rotation)
+and the colonies are well distributed, BaColonyzer can also find the position
+of the agar plate and the colonies by using the peaks of the image intensities
+along the x and y axis of the image. This option is sensitive to the plate
+edge being visible and you may need to provide a fake image as new last image
+where you've drawn white filled circles on each position of the spots.
+
+
+Example:
+```bash
+bacolonyzer analyse -p
+```
+
+
 **Light correction**
 
 By default, BaColonyzer normalises all of the images and the colony areas by
@@ -119,7 +136,8 @@ bacolonyzer analyse -c
 
 In order to correct for images that show a very low contrast between colonies
 and background, and to improve the detection of spots, Bacolonyzer can perform
-an adaptive segmentation of the image.
+an adaptive segmentation of the image. This option might also be useful
+if the difference in intensity between individual colonies is large.
 
 By default, BaColonyzer will not correct for that. However, you can enable
 this option with the parameter `-l` or `--low_contrasts`.

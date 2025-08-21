@@ -1,4 +1,5 @@
 """Definition of all commands available in BaColonyzer."""
+
 import logging
 
 from bacolonyzer import analysis, filesystem, utils
@@ -8,11 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class AnalyseCommand(abstract.AbstractCommand):
-
-    _SUBCOMMAND = 'analyse'
+    _SUBCOMMAND = "analyse"
     _DESCRIPTION = """\
     Analyse timeseries of QFA images: locate cultures on
-    plate, segment image into agar and cells, apply lighting correction,
+    plate, segment image into agar and cells, apply lighting correction, detect spot grid,
     and generate output files for each image.
     """
 
@@ -24,13 +24,15 @@ class AnalyseCommand(abstract.AbstractCommand):
             help="""Directory in which to search for image files that need to be
             analysed.
             Default: current directory.""",
-            default=".")
+            default=".",
+        )
         parser.add_argument(
             "-c",
             "--light_correction_off",
             help="""Disables lighting correction between images.
             Default: Light correction is enabled.""",
-            action="store_false")
+            action="store_false",
+        )
         parser.add_argument(
             "-r",
             "--reference_image",
@@ -41,30 +43,34 @@ class AnalyseCommand(abstract.AbstractCommand):
             to calibrate the final results and might be useful to compare
             different experiments.
             Default: No reference image is used.""",
-            default="")
+            default="",
+        )
         parser.add_argument(
             "-q",
             "--quiet",
             help="""Suppresses messages printed during the analysis.
             Default: show messages.""",
-            action="store_true")
+            action="store_true",
+        )
         parser.add_argument(
             "-e",
             "--endpoint",
             help="""Analyses only the final image in the series.
             It is useful to test single images.
             Default: False. Analyse all images in the directory.""",
-            action="store_true")
+            action="store_true",
+        )
         parser.add_argument(
             "-g",
             "--grid_format",
             type=str,
-            nargs='+',
+            nargs="+",
             help="""Specifies rectangular grid format.
             Important: specify number of rows and number of columns, in this order
             (e.g. -g 8x12 or -g 8 12).
             Default: 8x12.""",
-            default=['8x12'])
+            default=["8x12"],
+        )
         parser.add_argument(
             "-f",
             "--fraction",
@@ -72,14 +78,23 @@ class AnalyseCommand(abstract.AbstractCommand):
             help="""Specifies the minimum fraction of the image that corresponds
             to the grid. Adjust it if grid occupies a small part of the total image.
             Default: 0.8.""",
-            default=0.8)
+            default=0.8,
+        )
         parser.add_argument(
             "-l",
             "--low_contrasts",
             help="""Performs an adaptive segmentation of the image to correct
             for low contrasts and improve the spot detection.
             Default: False. Do not perform adaptive segmentation.""",
-            action="store_true")
+            action="store_true",
+        )
+        parser.add_argument(
+            "-p",
+            "--grid_by_peaks",
+            help="""Use peak detection to locate the grid instead of template matching. Sensitive to plate edges being
+            higher in intensity than the spots. You might need to provide a fake image with white spots drawn onto real spots.""",
+            action="store_true",
+        )
 
     def run(self, args):
         # Setup logger
@@ -99,8 +114,7 @@ class AnalyseCommand(abstract.AbstractCommand):
         # Create needed directories to save outputs.
         filesystem.arrange_directories(fdir)
         # Obtain list of images to analyse.
-        imanalyse = filesystem.get_images(fdir, args.endpoint,
-                                          args.reference_image)
+        imanalyse = filesystem.get_images(fdir, args.endpoint, args.reference_image)
 
         # Perform main logic.
         analysis.analyse_timeseries_qfa(
@@ -111,6 +125,8 @@ class AnalyseCommand(abstract.AbstractCommand):
             light_correction=args.light_correction_off,
             fraction=args.fraction,
             reference_image=args.reference_image,
-            low_contrasts=args.low_contrasts)
+            low_contrasts=args.low_contrasts,
+            grid_by_peaks=args.grid_by_peaks,
+        )
 
         logger.info("No more images to analyse. I'm done")
